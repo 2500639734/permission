@@ -100,6 +100,36 @@
 
 	</dependencies>
 
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<package.environment>dev</package.environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>fat</id>
+			<properties>
+				<package.environment>fat</package.environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>uat</id>
+			<properties>
+				<package.environment>uat</package.environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>pro</id>
+			<properties>
+				<package.environment>pro</package.environment>
+			</properties>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
