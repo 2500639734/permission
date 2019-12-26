@@ -21,7 +21,7 @@ import javax.validation.ConstraintViolationException;
 public class SpringExceptionResolver {
 
     /**
-     * 参数校验异常处理,手动处理BindResult
+     * 参数校验异常处理,自动处理BindResult
      * @param e
      * @return
      */

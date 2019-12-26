@@ -4,4 +4,4 @@ apollo:
   bootstrap:
     enabled: true
     namespaces: application.yml,spring-datasource.yml
-  env: @package.environment@
+  #env: @package.environment@
