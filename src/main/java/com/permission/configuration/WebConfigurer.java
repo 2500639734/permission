@@ -1,7 +1,5 @@
 package com.permission.configuration;
 
-import com.permission.interceptor.HttpInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -15,9 +13,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfigurer implements WebMvcConfigurer {
 
-    @Autowired
-    private HttpInterceptor httpInterceptor;
-
     /**
      * 配置URL请求的拦截策略
      * @param registry
@@ -25,7 +20,7 @@ public class WebConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 配置Http请求拦截器拦截所有请求
-        registry.addInterceptor(httpInterceptor).addPathPatterns("/**");
+        // registry.addInterceptor(httpInterceptor).addPathPatterns("/**");
     }
 
     /**

@@ -50,7 +50,6 @@ public class ValidatedUtils {
 
     /**
      * 获取参数校验异常结果中第一个错误提示
-     * @param bindingResult
      * @return
      */
     public static String getParamExceptionFirstErrorMsg (Set<ConstraintViolation<?>> constraintViolations) {

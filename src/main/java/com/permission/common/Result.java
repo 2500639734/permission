@@ -76,7 +76,7 @@ public class Result {
      * @return
      */
     public static Result build (ResultEnum resultEnum, Object data) {
-        return new Result(resultEnum.getCode(), resultEnum.getMsg(), data, 6);
+        return new Result(resultEnum.getCode(), resultEnum.getMsg(), data, null);
     }
 
     /**

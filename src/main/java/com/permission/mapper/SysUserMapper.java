@@ -1,12 +1,7 @@
 package com.permission.mapper;
 
-import com.permission.dto.SysUserDto;
-import com.permission.dto.input.SysUserQueryInput;
 import com.permission.pojo.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * <p>
@@ -14,10 +9,8 @@ import java.util.List;
  * </p>
  *
  * @author shenke
- * @since 2019-10-27
+ * @since 2020-02-21
  */
 public interface SysUserMapper extends BaseMapper<SysUser> {
-
-    List<SysUserDto> selectUserList (@Param("sysUserQueryInput") SysUserQueryInput sysUserQueryInput);
 
 }

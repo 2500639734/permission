@@ -2,9 +2,8 @@ package com.permission.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import java.time.LocalDateTime;
 import java.io.Serializable;
-import java.util.Date;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -15,7 +14,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author shenke
- * @since 2019-10-27
+ * @since 2020-02-21
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,32 +27,17 @@ public class SysRoleAcl implements Serializable {
      * 用户角色关系表主键id
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Integer id;
 
     /**
      * 角色id
      */
-    private Long roleId;
+    private Integer roleId;
 
     /**
      * 权限id
      */
-    private Long aclId;
-
-    /**
-     * 操作者
-     */
-    private String operator;
-
-    /**
-     * 最后一次更新时间
-     */
-    private Date operatorTime;
-
-    /**
-     * 最后一次更新者的ip地址
-     */
-    private String operatorIp;
+    private Integer aclId;
 
 
 }

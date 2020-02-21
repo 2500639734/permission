@@ -1,7 +1,3 @@
-app:
-  id: permission
-apollo:
-  bootstrap:
-    enabled: true
-    namespaces: application.yml,spring-datasource.yml
-  #env: @package.environment@
+spring:
+  profiles:
+    active: @package.environment@

@@ -15,18 +15,11 @@ import java.text.MessageFormat;
 public enum ResultEnum {
 
     /** 请求枚举*/
-    PARAM_ERROR (100, "参数错误:{0}"),
-    SUCCESS (200, "请求成功"),
-    ERROR (500, "服务器错误"),
-
-    /*----------------------- 部门业务相关枚举Start 1001 -----------------------*/
-    DEPT_NOT_EXISTS(1001, "当前部门不存在,部门id:{0}"),
-    DEPT_NAME_SAME (1002, "同一层级下存在相同名称的部门,上级部门id:{0},部门名称:{1}"),
-    /*----------------------- 部门业务相关枚举End 1099-----------------------*/
-
-    /*----------------------- 用户业务相关枚举Start 1001 -----------------------*/
-    USER_NOT_EXISTS(2001, "当前用户不存在,用户id:{0}");
-    /*----------------------- 用户业务相关枚举End 1099-----------------------*/
+    SUCCESS (0, "请求成功"),
+    ERROR (-1, "服务器错误"),
+    PARAM_ERROR (1000, "参数错误:{0}"),
+    NOT_PERMISSION (1001, "无权限访问,用户id:{0}"),
+    USER_NOT_EXISTS (2000, "用户不存在,用户id:{0}");
 
     /**
      * 状态码,必须唯一
@@ -59,12 +52,12 @@ public enum ResultEnum {
      * @return
      */
     public static String buildExceptionMsg (ResultEnum resultEnum) {
-        return new StringBuffer("code:(")
+        return new StringBuffer("[code:(")
                 .append(resultEnum.getCode())
                 .append("),")
                 .append("msg:(")
                 .append(resultEnum.getMsg())
-                .append(")")
+                .append(")]")
                 .toString();
     }
 

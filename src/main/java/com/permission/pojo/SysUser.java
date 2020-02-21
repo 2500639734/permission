@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author shenke
- * @since 2019-10-27
+ * @since 2020-02-21
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,7 +28,12 @@ public class SysUser implements Serializable {
      * 用户id
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Integer id;
+
+    /**
+     * 用户姓名
+     */
+    private String name;
 
     /**
      * 用户名
@@ -36,9 +41,14 @@ public class SysUser implements Serializable {
     private String username;
 
     /**
+     * 用户编码
+     */
+    private String code;
+
+    /**
      * 手机号码
      */
-    private String telephone;
+    private String phone;
 
     /**
      * 邮箱
@@ -46,39 +56,39 @@ public class SysUser implements Serializable {
     private String email;
 
     /**
-     * 加密后的密码
+     * 密码
      */
     private String password;
 
     /**
-     * 用户所在部门的id
+     * 创建人id
      */
-    private Long deptId;
+    private String createUserId;
 
     /**
-     * 用户状态，1：正常，0：冻结状态，2：删除
+     * 创建人姓名(冗余)
      */
-    private Integer status;
+    private String createUserName;
 
     /**
-     * 备注
+     * 创建时间
      */
-    private String remark;
+    private Date createTime;
 
     /**
-     * 操作者
+     * 更新人id
      */
-    private String operator;
+    private String updateUserId;
 
     /**
-     * 最后一次更新时间
+     * 更新人姓名(冗余)
      */
-    private Date operatorTime;
+    private String updateUserName;
 
     /**
-     * 最后一次更新者的ip地址
+     * 更新时间
      */
-    private String operatorIp;
+    private Date updateTime;
 
 
 }

@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author shenke
- * @since 2019-10-27
+ * @since 2020-02-21
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,7 +28,7 @@ public class SysAcl implements Serializable {
      * 权限id
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Integer id;
 
     /**
      * 权限编码
@@ -36,54 +36,39 @@ public class SysAcl implements Serializable {
     private String code;
 
     /**
-     * 权限模块名称
-     */
-    private String name;
-
-    /**
-     * 权限所在的权限模块id
-     */
-    private Long aclModelId;
-
-    /**
-     * 请求的url
+     * 请求的url相对路径
      */
     private String url;
 
     /**
-     * 权限类型，1：菜单，2：按钮，3：其它
+     * 创建人id
      */
-    private Integer type;
+    private String createUserId;
 
     /**
-     * 状态，1：正常，0：冻结
+     * 创建人姓名(冗余)
      */
-    private Integer status;
+    private String createUserName;
 
     /**
-     * 权限模块在当前层级下的顺序,升序
+     * 创建时间
      */
-    private Integer seq;
+    private Date createTime;
 
     /**
-     * 备注
+     * 更新人id
      */
-    private String remark;
+    private String updateUserId;
 
     /**
-     * 操作者
+     * 更新人姓名(冗余)
      */
-    private String operator;
+    private String updateUserName;
 
     /**
-     * 最后一次更新时间
+     * 更新时间
      */
-    private Date operatorTime;
-
-    /**
-     * 最后一次更新者的ip地址
-     */
-    private String operatorIp;
+    private Date updateTime;
 
 
 }

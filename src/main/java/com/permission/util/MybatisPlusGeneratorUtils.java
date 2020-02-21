@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
+import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
@@ -22,7 +23,7 @@ public class MybatisPlusGeneratorUtils {
     }
 
     public static void main(String[] args) {
-        generatorCode("sys_dept", "sys_user", "sys_role", "sys_acl_model", "sys_acl", "sys_log", "sys_role_user", "sys_role_acl");
+        generatorCode("sys_user", "sys_role", "sys_acl", "sys_user_role", "sys_role_acl");
     }
 
     /**
@@ -43,6 +44,7 @@ public class MybatisPlusGeneratorUtils {
         gc.setBaseResultMap(true);
         gc.setBaseColumnList(true);
         gc.setServiceName("%sService");
+        gc.setDateType(DateType.ONLY_DATE);
         // gc.setSwagger2(true);
         mpg.setGlobalConfig(gc);
 

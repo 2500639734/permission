@@ -1,9 +1,13 @@
-package com.permission.common;
+package com.permission.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @auther: shenke
@@ -45,6 +49,14 @@ public class SpringContextUtils implements ApplicationContextAware {
      */
     public static <T> T getBean (String name, Class<T> clazz) {
         return clazz == null ? null : SpringContextUtils.applicationContext.getBean(name, clazz);
+    }
+
+    /**
+     * 获取当前请求的HttpServletRequest
+     * @return
+     */
+    public static HttpServletRequest getCurrentRequest () {
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
     }
 
 }

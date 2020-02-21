@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author shenke
- * @since 2019-10-27
+ * @since 2020-02-21
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -28,7 +28,7 @@ public class SysRole implements Serializable {
      * 角色id
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Integer id;
 
     /**
      * 角色名称
@@ -36,34 +36,39 @@ public class SysRole implements Serializable {
     private String name;
 
     /**
-     * 角色类型，1：管理员，2：其它
+     * 角色编码
      */
-    private Integer type;
+    private String code;
 
     /**
-     * 状态，1：正常，0：冻结
+     * 创建人id
      */
-    private Integer status;
+    private String createUserId;
 
     /**
-     * 备注
+     * 创建人姓名(冗余)
      */
-    private String remark;
+    private String createUserName;
 
     /**
-     * 操作者
+     * 创建时间
      */
-    private String operator;
+    private Date createTime;
 
     /**
-     * 最后一次更新时间
+     * 更新人id
      */
-    private Date operatorTime;
+    private String updateUserId;
 
     /**
-     * 最后一次更新者的ip地址
+     * 更新人姓名(冗余)
      */
-    private String operatorIp;
+    private String updateUserName;
+
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
 
 
 }

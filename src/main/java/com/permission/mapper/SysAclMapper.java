@@ -1,7 +1,12 @@
 package com.permission.mapper;
 
+import com.permission.annotation.Permission;
 import com.permission.pojo.SysAcl;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -9,8 +14,15 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author shenke
- * @since 2019-10-27
+ * @since 2020-02-21
  */
 public interface SysAclMapper extends BaseMapper<SysAcl> {
+
+    /**
+     * 获取用户包含的权限列表
+     * @param userId
+     * @return
+     */
+    List<SysAcl> selectPermissionListByUserId (@Param("userId") Integer userId);
 
 }
