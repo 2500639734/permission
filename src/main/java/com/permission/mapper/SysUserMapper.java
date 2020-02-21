@@ -1,7 +1,10 @@
 package com.permission.mapper;
 
+import com.permission.dto.input.SysUserInfo;
+import com.permission.dto.input.SysUserLoginInput;
 import com.permission.pojo.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>

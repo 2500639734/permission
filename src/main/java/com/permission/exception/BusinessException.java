@@ -25,7 +25,7 @@ public class BusinessException extends RuntimeException {
      * @param msgs
      */
     public BusinessException(ResultEnum resultEnum, Object ... msgs) {
-        super(MessageFormat.format(ResultEnum.buildExceptionMsg(resultEnum), msgs));
+        super(ResultEnum.buildExceptionMsg(resultEnum, msgs));
     }
 
     /**

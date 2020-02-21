@@ -1,6 +1,8 @@
 package com.permission.controller;
 
+import com.permission.annotation.CasUser;
 import com.permission.annotation.Permission;
+import com.permission.dto.input.SysUserInfo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
     @GetMapping("/test1")
-    public String test1 () {
+    public String test1 (@CasUser SysUserInfo sysUserInfo) {
+        System.out.println("---------------------->>>>>>>>>>>>>>>>>>   " + sysUserInfo.toString());
         return "hello world";
     }
 

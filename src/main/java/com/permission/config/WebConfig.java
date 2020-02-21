@@ -1,9 +1,13 @@
-package com.permission.configuration;
+package com.permission.config;
 
+import com.permission.extension.CasUserAnnotationsArgumentResolver;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 /**
  * @auther: shenke
@@ -11,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @description: Web拦截器配置
  */
 @Configuration
-public class WebConfigurer implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer {
 
     /**
      * 配置URL请求的拦截策略
@@ -31,4 +35,14 @@ public class WebConfigurer implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
     }
+
+    /**
+     * 配置自定义参数解析器
+     * @param resolvers
+     */
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new CasUserAnnotationsArgumentResolver());
+    }
+
 }

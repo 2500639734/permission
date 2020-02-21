@@ -40,6 +40,24 @@ spring:
         reset-enable: true
         login-username: root
         login-password: root
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      #password: root
+      # Redis默认情况下有16个分片，这里配置具体使用的分片，默认是0
+      database: 0
+      timeout: 3000s
+      # 连接池配置，2.0中使用lettuce配置连接池
+      lettuce:
+        pool:
+          # 连接池最大连接数（使用负值表示没有限制） 默认8
+          max-active: 500
+          # 连接池最大阻塞等待时间（使用负值表示没有限制） 默认-1
+          max-wait: 50
+          # 连接池中的最大空闲连接 （使用负值表示没有限制）默认8
+          max-idle: 10
+          # 最大活跃连接数（使用负值表示没有限制）
+          min-idle: 500
 
 mybatis-plus:
   configuration:

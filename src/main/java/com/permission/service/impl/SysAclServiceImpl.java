@@ -32,7 +32,7 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
     @Override
     public List<SysAcl> selectPermissionListByUserId(Integer userId) {
         // 参数校验
-        ValidatedUtils.objectIsNuLL(userId, ResultEnum.USER_NOT_EXISTS, userId);
+        ValidatedUtils.objectIsNuLL(userId, ResultEnum.PARAM_ERROR);
 
         return sysAclMapper.selectPermissionListByUserId(userId);
     }

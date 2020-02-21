@@ -1,5 +1,6 @@
 package com.permission.exception;
 
+import com.alibaba.fastjson.JSON;
 import com.permission.common.Result;
 import com.permission.enumeration.ResultEnum;
 import com.permission.util.ValidatedUtils;
@@ -85,9 +86,7 @@ public class SpringExceptionResolver {
         log.error("[业务异常]", e);
 
         String message = e.getMessage();
-        Integer code = Integer.valueOf(message.substring(message.indexOf("(") + 1, message.indexOf(")")).trim());
-        String msg = message.substring(message.lastIndexOf("(") + 1, message.lastIndexOf(")")).trim();
-        return Result.build(code, msg);
+        return JSON.parseObject(message, Result.class);
     }
 
     /**

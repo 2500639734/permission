@@ -4,10 +4,12 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
 import com.permission.exception.ParamValidException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 
 import javax.validation.ConstraintViolation;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -79,6 +81,38 @@ public class ValidatedUtils {
     public static void objectIsNuLL (Object obj, ResultEnum resultEnum, Object ... msgs) {
         if (obj == null) {
             throw new BusinessException(resultEnum, msgs);
+        }
+    }
+
+    /**
+     * 校验对象是否为空
+     * @param objs
+     * @param resultEnum
+     * @param msgs
+     */
+    public static void objectIsNuLLAnd (Object[] objs, ResultEnum resultEnum, Object[] msgs) {
+        for (int i = 0; i < objs.length; i++) {
+            objectIsNuLL(objs[i], resultEnum, msgs[i]);
+        }
+    }
+
+    /**
+     * 校验字符串是否为空
+     * StringUtils.isEmpty(str1) or StringUtils.isEmpty(str2) or ...StringUtils.isEmpty(strN)
+     * 若全部为空，则抛出BusinessException
+     * @param resultEnum
+     * @param strs
+     */
+    public static void strIsNullOr (ResultEnum resultEnum, String ... strs) {
+        int numbers = 0;
+        for (int i = 0; i < strs.length; i++) {
+            if (StringUtils.isEmpty(strs[i])) {
+                numbers ++;
+            }
+        }
+
+        if (numbers == strs.length) {
+            throw new BusinessException(resultEnum);
         }
     }
 

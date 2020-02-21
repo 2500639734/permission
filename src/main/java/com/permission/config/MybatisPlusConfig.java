@@ -1,4 +1,4 @@
-package com.permission.configuration;
+package com.permission.config;
 
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @MapperScan("com.permission.mapper*")
-public class MybatisPlusConfiguration {
+public class MybatisPlusConfig {
 
     /**
      * mybatis-plus分页插件<br>

@@ -1,33 +1,27 @@
-package com.permission.pojo;
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
-import java.util.Date;
+package com.permission.dto.input;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+import java.util.Date;
+
 /**
- * <p>
- * 用户表
- * </p>
- *
- * @author shenke
- * @since 2020-02-21
+ * @auther: shenke
+ * @date: 2020/2/21 22:20
+ * @description: 系统用户信息
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SysUser implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@ToString
+public class SysUserInfo implements Serializable {
 
     /**
      * 用户id
      */
-    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -54,16 +48,6 @@ public class SysUser implements Serializable {
      * 邮箱
      */
     private String email;
-
-    /**
-     * 密码
-     */
-    private String password;
-
-    /**
-     * 用户密码加密盐,16位UUID
-     */
-    private String passwordSalt;
 
     /**
      * 创建人id
@@ -95,5 +79,9 @@ public class SysUser implements Serializable {
      */
     private Date updateTime;
 
+    /**
+     * 用户登录成功的Token
+     */
+    private String token;
 
 }
