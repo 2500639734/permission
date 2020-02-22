@@ -5,6 +5,7 @@ import com.permission.annotation.NoPermission;
 import com.permission.annotation.Permission;
 import com.permission.common.Result;
 import com.permission.dto.input.SysUserLoginInput;
+import com.permission.dto.input.SysUserRegisterInput;
 import com.permission.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,16 @@ public class SysUserController {
 
     @Autowired
     private SysUserService sysUserService;
+
+    /**
+     * 添加用户
+     * @param sysUserRegisterInput
+     * @return
+     */
+    @PostMapping("/addUser")
+    public Result register (@RequestBody SysUserRegisterInput sysUserRegisterInput) {
+        return Result.success(sysUserService.addUser(sysUserRegisterInput));
+    }
 
     /**
      * 用户登录

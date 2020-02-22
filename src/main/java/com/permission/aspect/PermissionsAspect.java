@@ -41,6 +41,8 @@ public class PermissionsAspect {
 
     /**
      * 前置通知，方法执行之前将被调用
+     * 先检验是否已登录
+     * 再检验是否拥有对应的接口权限
      * @param joinPoint
      */
     @Before(value = "point()")
@@ -52,6 +54,20 @@ public class PermissionsAspect {
             return;
         }
 
+        // 检验权限之前先检验是否已登录
+        SysUserInfo sysUserInfo = checkLogin();
+
+        // 校验是否有请求URI接口的访问权限
+        if (! sysAclService.isPermission(sysUserInfo.getId(), SpringContextUtils.getCurrentRequest())) {
+            throw new BusinessException(ResultEnum.NOT_PERMISSION);
+        }
+    }
+
+    /**
+     * 检查当前用户是否已登录
+     * @return
+     */
+    private SysUserInfo checkLogin(){
         HttpServletRequest currentRequest = SpringContextUtils.getCurrentRequest();
 
         // HttpServletRequest的请求头中获取Redis中存放的用户登录Token的Key
@@ -66,10 +82,7 @@ public class PermissionsAspect {
             throw new BusinessException(ResultEnum.NOT_LOGIN);
         }
 
-        // 校验是否有请求URI接口的访问权限
-        if (! sysAclService.isPermission(sysUserInfo.getId(), SpringContextUtils.getCurrentRequest())) {
-            throw new BusinessException(ResultEnum.NOT_PERMISSION, 1);
-        }
+        return sysUserInfo;
     }
 
 }

@@ -3,6 +3,7 @@ package com.permission.util;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 
 import java.util.Collection;
 import java.util.List;
@@ -64,14 +65,33 @@ public class RedisUtils {
     }
 
     /**
-     * 对一个 key-value 的值进行自增操作
+     * 对一个key的值进行自增操作
      * @param key Redis键
      * @param number 数值
      * @return 自增后的值
      */
-    public long increment(String key, long number) {
+    public static long increment(String key, long number) {
         try {
             return redisTemplate.opsForValue().increment(key, number);
+        } catch (Exception e) {
+            throw new BusinessException(ResultEnum.REDIS_OPERATION_FAIL, e);
+        }
+    }
+
+    /**
+     * 对一个key的值进行自增操作
+     * @param key Redis键
+     * @param liveTime 过期时间
+     * @return
+     */
+    public static long getAndIncrement(String key, long liveTime) {
+        try {
+            RedisAtomicLong entityIdCounter = new RedisAtomicLong(key, redisTemplate.getConnectionFactory());
+            Long increment = entityIdCounter.getAndIncrement();
+            if ((increment == null || increment.longValue() == 0) && liveTime > 0) {
+                entityIdCounter.expire(liveTime, TimeUnit.MILLISECONDS);
+            }
+            return increment;
         } catch (Exception e) {
             throw new BusinessException(ResultEnum.REDIS_OPERATION_FAIL, e);
         }
@@ -175,7 +195,22 @@ public class RedisUtils {
      */
     public static String getString(String key) {
         try {
-            return redisTemplate.opsForValue().get(key).toString();
+            Object o = redisTemplate.opsForValue().get(key);
+            return o == null ? null : o.toString();
+        } catch (Exception e) {
+            throw new BusinessException(ResultEnum.REDIS_OPERATION_FAIL, e);
+        }
+    }
+
+    /**
+     * 获取String中的数据
+     * @param key Redis键
+     * @return
+     */
+    public static Integer getInteger(String key) {
+        try {
+            Object o = redisTemplate.opsForValue().get(key);
+            return o == null ? null : Integer.valueOf(o.toString());
         } catch (Exception e) {
             throw new BusinessException(ResultEnum.REDIS_OPERATION_FAIL, e);
         }

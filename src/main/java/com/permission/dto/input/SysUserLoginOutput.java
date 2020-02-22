@@ -6,22 +6,22 @@ import lombok.experimental.Accessors;
 
 /**
  * @auther: shenke
- * @date: 2020/2/21 22:13
- * @description: 用户登录入参
+ * @date: 2020/2/23 6:22
+ * @description: 用户登录返参
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SysUserLoginInput {
+public class SysUserLoginOutput {
 
     /**
-     * 用户名
+     * 用户信息
      */
-    private String username;
+    private SysUserInfo sysUserInfo;
 
     /**
-     * 用户密码
+     * 用户登录成功的Token
      */
-    private String password;
+    private String token;
 
 }

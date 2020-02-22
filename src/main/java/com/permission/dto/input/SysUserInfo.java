@@ -1,9 +1,11 @@
 package com.permission.dto.input;
 
+import com.permission.pojo.SysUser;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -30,24 +32,14 @@ public class SysUserInfo implements Serializable {
     private String name;
 
     /**
-     * 用户名
-     */
-    private String username;
-
-    /**
      * 用户编码
      */
     private String code;
 
     /**
-     * 手机号码
+     * 用户名
      */
-    private String phone;
-
-    /**
-     * 邮箱
-     */
-    private String email;
+    private String username;
 
     /**
      * 创建人id
@@ -80,8 +72,18 @@ public class SysUserInfo implements Serializable {
     private Date updateTime;
 
     /**
-     * 用户登录成功的Token
+     * SysUser -> SysUserInfo
+     * @param sysUser
+     * @return
      */
-    private String token;
+    public static SysUserInfo toSysUserInfo (SysUser sysUser) {
+        if (sysUser == null) {
+            return null;
+        }
+
+        SysUserInfo sysUserInfo = new SysUserInfo();
+        BeanUtils.copyProperties(sysUser, sysUserInfo);
+        return sysUserInfo;
+    }
 
 }

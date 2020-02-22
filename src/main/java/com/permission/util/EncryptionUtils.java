@@ -27,12 +27,7 @@ public class EncryptionUtils {
     private static final Integer DEFAULT_MD5_TIMES = 5;
 
     /**
-     * 系统用户登录Token前缀
-     */
-    public static final String LOGIIN_TOKEN_PREFIX = "user_login_";
-
-    /**
-     * 系统用户登录Token默认超时时间毫秒
+     * 用户登录Token默认超时时间2小时
      */
     public static final long LOGIIN_TOKEN_DEFAULT_TIME_OUT_MS = 1000 * 60 * 60 * 2;
 
@@ -50,7 +45,7 @@ public class EncryptionUtils {
      */
     public static String getPassword (String password, String passwordSalt) {
         if (StringUtils.isEmpty(password ) || StringUtils.isEmpty(passwordSalt)) {
-            throw new BusinessException(ResultEnum.LOGIN_USER_PASSWORD_ENCRYPTION_FAIL);
+            throw new BusinessException(ResultEnum.PASSWORD_ENCRYPTION_FAIL);
         }
 
         String oldPassword = new StringBuilder(password).append(passwordSalt).toString();
@@ -58,18 +53,6 @@ public class EncryptionUtils {
             oldPassword = md5(oldPassword);
         }
         return oldPassword;
-    }
-
-    /**
-     * 获取Token
-     * 生成规则：前缀 + 16位uuid
-     * @param prefix Token前缀,EncryptionUtils中
-     * @return token
-     */
-    public static String token (String prefix) {
-        return new StringBuilder(LOGIIN_TOKEN_PREFIX)
-                .append(uuid())
-                .toString();
     }
 
     /**

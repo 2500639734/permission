@@ -6,9 +6,8 @@
     <resultMap id="BaseResultMap" type="com.permission.pojo.SysUser">
         <id column="id" property="id" />
         <result column="name" property="name" />
-        <result column="username" property="username" />
         <result column="code" property="code" />
-        <result column="phone" property="phone" />
+        <result column="username" property="username" />
         <result column="email" property="email" />
         <result column="password" property="password" />
         <result column="create_user_id" property="createUserId" />
@@ -21,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, username, code, phone, email, password, create_user_id, create_user_name, create_time, update_user_id, update_user_name, update_time
+        id, name, code, username, password, create_user_id, create_user_name, create_time, update_user_id, update_user_name, update_time
     </sql>
 
 </mapper>

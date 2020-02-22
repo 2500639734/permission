@@ -9,9 +9,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 
 import javax.validation.ConstraintViolation;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @auther: shenke
@@ -73,26 +74,31 @@ public class ValidatedUtils {
     }
 
     /**
-     * 校验对象是否为空
-     * @param obj
+     * 校验字符串是否为空
+     * @param strs
      * @param resultEnum
-     * @param msgs
      */
-    public static void objectIsNuLL (Object obj, ResultEnum resultEnum, Object ... msgs) {
-        if (obj == null) {
-            throw new BusinessException(resultEnum, msgs);
+    public static void strIsNull (String strs, ResultEnum resultEnum) {
+        if (StringUtils.isEmpty(strs)) {
+            throw new BusinessException(resultEnum);
         }
     }
 
     /**
-     * 校验对象是否为空
-     * @param objs
+     * 校验字符串是否满足正则表达式
+     * @param str
      * @param resultEnum
-     * @param msgs
+     * @return
      */
-    public static void objectIsNuLLAnd (Object[] objs, ResultEnum resultEnum, Object[] msgs) {
-        for (int i = 0; i < objs.length; i++) {
-            objectIsNuLL(objs[i], resultEnum, msgs[i]);
+    public static void strIsMatchRegex (String str, String regex, ResultEnum resultEnum) {
+        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(regex)) {
+            throw new BusinessException(resultEnum);
+        }
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(str);
+        if (! matcher.matches()) {
+            throw new BusinessException(resultEnum);
         }
     }
 

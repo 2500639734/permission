@@ -1,11 +1,7 @@
 package com.permission.enumeration;
 
-import com.alibaba.fastjson.JSON;
-import com.permission.common.Result;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.text.MessageFormat;
 
 /**
  * @auther: shenke
@@ -17,11 +13,11 @@ import java.text.MessageFormat;
 public enum ResultEnum {
 
     /**
-     * 系统相关枚举,仅打印日志不必返回前端
+     * 系统相关枚举
      */
     SUCCESS (1000, "请求成功"),
     ERROR (1001, "服务器错误"),
-    PARAM_ERROR (1002, "参数缺失:{0}"),
+    PARAM_ERROR (1002, "参数缺失"),
     MD5_ENCRYPTION_FAIL (1003, "MD5加密失败"),
     REDIS_OPERATION_FAIL (1004, "Redis操作失败"),
 
@@ -34,11 +30,16 @@ public enum ResultEnum {
     /**
      * 用户相关枚举
      */
-    LOGIN_FAIL_USERNAME_OR_PHONE_IS_NULL (10001, "登录失败,请填写用户名或手机号"),
-    LOGIN_FAIL_PASSWORD_IS_NULL (10002, "登录失败,请填写密码"),
-    LOGIN_FAIL_USER_NOT_EXISTS (10002, "登录失败,用户不存在"),
-    LOGIN_FAIL_BY_PASSWORD_ERROR (10003, "登录失败,请检查密码是否正确"),
-    LOGIN_USER_PASSWORD_ENCRYPTION_FAIL (10004, "用户密码加密失败");
+    NAME_IS_NULL (10001, "请填写姓名"),
+    NAME__NOT_REGEX (10001, "请检查姓名是否正确"),
+    USERNAME_IS_NULL (10001, "请填写用户名"),
+    USERNAME_NOT_REGEX (1002, "请检查用户名是否正确"),
+    PASSWORD_IS_NULL (10003, "请填写密码"),
+    USER_NOT_EXISTS (10004, "用户不存在"),
+    PASSWORD_ERROR (10005, "请检查密码是否正确"),
+    PASSWORD_ENCRYPTION_FAIL (10006, "密码加密失败"),
+    REGISTER_FAIL (10007, "注册失败"),
+    PHONE_REGISTER (10008, "手机号已被注册");
 
     /**
      * 状态码,必须唯一
@@ -62,28 +63,6 @@ public enum ResultEnum {
             }
         }
         return null;
-    }
-
-    /**
-     * 构建业务异常提示消息
-     * code:{],msg:[]
-     * @param resultEnum
-     * @return
-     */
-    public static String buildExceptionMsg (ResultEnum resultEnum, Object ... msgs) {
-        String formatMsg = MessageFormat.format(resultEnum.getMsg(), msgs);
-        return JSON.toJSONString(Result.build(resultEnum.getCode(), formatMsg));
-    }
-
-    /**
-     * 构建异常时的返回枚举
-     * @param resultEnum
-     * @param msgs
-     * @return
-     */
-    public static ResultEnum buildExceptionResultEnum (ResultEnum resultEnum, Object ... msgs) {
-        resultEnum.msg = MessageFormat.format(resultEnum.msg, msgs);
-        return resultEnum;
     }
 
 }
