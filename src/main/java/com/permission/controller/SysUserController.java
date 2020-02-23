@@ -1,11 +1,12 @@
 package com.permission.controller;
 
 
+import com.permission.annotation.CasUser;
 import com.permission.annotation.NoPermission;
-import com.permission.annotation.Permission;
 import com.permission.common.Result;
-import com.permission.dto.input.SysUserLoginInput;
-import com.permission.dto.input.SysUserRegisterInput;
+import com.permission.dto.input.sysuser.SysUserInfo;
+import com.permission.dto.input.sysuser.SysUserLoginInput;
+import com.permission.dto.input.sysuser.SysUserInput;
 import com.permission.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @RestController
 @RequestMapping("/sys-user")
-@Permission
+// @Permission
 public class SysUserController {
 
     @Autowired
@@ -31,16 +32,39 @@ public class SysUserController {
 
     /**
      * 添加用户
-     * @param sysUserRegisterInput
+     * @param sysUserInfo 当前登录的用户信息
+     * @param sysUserInput 添加用户入参
      * @return
      */
     @PostMapping("/addUser")
-    public Result register (@RequestBody SysUserRegisterInput sysUserRegisterInput) {
-        return Result.success(sysUserService.addUser(sysUserRegisterInput));
+    public Result addUser (@CasUser SysUserInfo sysUserInfo, @RequestBody SysUserInput sysUserInput) {
+        return Result.success(sysUserService.addUser(sysUserInfo, sysUserInput));
+    }
+
+    /**
+     * 更新用户
+     * @param sysUserInfo 当前登录的用户信息
+     * @param sysUserInput 添加用户入参
+     * @return
+     */
+    @PostMapping("/updateUser")
+    public Result updateUser (@CasUser SysUserInfo sysUserInfo, @RequestBody SysUserInput sysUserInput) {
+        return Result.success(sysUserService.updateUser(sysUserInfo, sysUserInput));
+    }
+
+    /**
+     * 删除用户
+     * @param userId 用户id
+     * @return
+     */
+    @PostMapping("/deleteUser/{userId}")
+    public Result deleteUser (@PathVariable("userId") Integer userId) {
+        return Result.success(sysUserService.deleteUser(userId));
     }
 
     /**
      * 用户登录
+     * TODO 暂时修改为Get方便测试
      * @param response
      * @param sysUserLoginInput
      * @return

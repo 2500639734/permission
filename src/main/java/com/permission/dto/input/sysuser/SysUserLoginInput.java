@@ -1,4 +1,4 @@
-package com.permission.dto.input;
+package com.permission.dto.input.sysuser;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -6,18 +6,13 @@ import lombok.experimental.Accessors;
 
 /**
  * @auther: shenke
- * @date: 2020/2/22 8:40
- * @description: 用户注册入参
+ * @date: 2020/2/21 22:13
+ * @description: 用户登录入参
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SysUserRegisterInput {
-
-    /**
-     * 用户姓名
-     */
-    private String name;
+public class SysUserLoginInput {
 
     /**
      * 用户名
@@ -25,7 +20,7 @@ public class SysUserRegisterInput {
     private String username;
 
     /**
-     * 密码
+     * 用户密码
      */
     private String password;
 

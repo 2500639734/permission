@@ -1,4 +1,4 @@
-package com.permission.dto.input;
+package com.permission.dto.input.sysuser;
 
 import com.permission.pojo.SysUser;
 import lombok.Data;

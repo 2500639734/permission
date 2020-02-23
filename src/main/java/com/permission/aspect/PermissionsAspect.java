@@ -1,8 +1,7 @@
 package com.permission.aspect;
 
 import com.permission.annotation.NoPermission;
-import com.permission.dto.input.SysUserInfo;
-import com.permission.dto.input.SysUserLoginOutput;
+import com.permission.dto.input.sysuser.CasUserInfo;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
 import com.permission.service.SysAclService;
@@ -56,10 +55,10 @@ public class PermissionsAspect {
         }
 
         // 检验权限之前先检验是否已登录
-        SysUserLoginOutput sysUserLoginOutput = checkLogin();
+        CasUserInfo casUserInfo = checkLogin();
 
         // 校验是否有请求URI接口的访问权限
-        if (! sysAclService.isPermission(sysUserLoginOutput.getSysUserInfo().getId(), SpringContextUtils.getCurrentRequest())) {
+        if (! sysAclService.hasPermission(casUserInfo.getSysUserInfo().getId(), SpringContextUtils.getCurrentRequest())) {
             throw new BusinessException(ResultEnum.NOT_PERMISSION);
         }
     }
@@ -68,7 +67,7 @@ public class PermissionsAspect {
      * 检查当前用户是否已登录
      * @return
      */
-    private SysUserLoginOutput checkLogin(){
+    private CasUserInfo checkLogin(){
         HttpServletRequest currentRequest = SpringContextUtils.getCurrentRequest();
 
         // Cookie中获取当前登录用户的Token
@@ -79,12 +78,12 @@ public class PermissionsAspect {
         }
 
         // Redis中获取当前登录的用户信息
-        SysUserLoginOutput sysUserLoginOutput = (SysUserLoginOutput) RedisUtils.get(loginToken);
-        if (sysUserLoginOutput == null) {
+        CasUserInfo casUserInfo = (CasUserInfo) RedisUtils.get(loginToken);
+        if (casUserInfo == null) {
             throw new BusinessException(ResultEnum.NOT_LOGIN);
         }
 
-        return sysUserLoginOutput;
+        return casUserInfo;
     }
 
 }

@@ -36,10 +36,23 @@ public enum ResultEnum {
     USERNAME_NOT_REGEX (1002, "请检查用户名是否正确"),
     PASSWORD_IS_NULL (10003, "请填写密码"),
     USER_NOT_EXISTS (10004, "用户不存在"),
-    PASSWORD_ERROR (10005, "请检查密码是否正确"),
-    PASSWORD_ENCRYPTION_FAIL (10006, "密码加密失败"),
-    REGISTER_FAIL (10007, "注册失败"),
-    PHONE_REGISTER (10008, "手机号已被注册");
+    USER_EXISTS (10005, "用户已存在"),
+    USERNAME_OR_PASSWORD_ERROR (10006, "用户名或密码错误"),
+    PASSWORD_ENCRYPTION_FAIL (10007, "密码加密失败"),
+    ADD_USER_FAIL (10008, "添加用户失败"),
+    UPDATE_USER_FAIL (10009, "更新用户失败"),
+    DELETE_USER_FAIL (10010, "删除用户失败"),
+    USERNAME_EXISTS (10011, "用户名已存在"),
+
+    /**
+     * 角色相关枚举
+     */
+    ROLE_NAME_IS_NULL(11001, "请填写角色名称"),
+    ROLE_NAME_NOT_REGEX(11002, "请检查角色名称是否正确"),
+    ROLE_EXISTS (11004, "角色已存在"),
+    ROLE_NOT_EXISTS (11005, "角色不存在"),
+    ADD_ROLE_FAIL (11006, "添加角色失败"),
+    NO_SELECTD_ROLE (11007, "请选择对应角色");
 
     /**
      * 状态码,必须唯一

@@ -1,16 +1,17 @@
 package com.permission.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.permission.dto.input.SysUserInfo;
-import com.permission.dto.input.SysUserLoginInput;
-import com.permission.dto.input.SysUserLoginOutput;
-import com.permission.dto.input.SysUserRegisterInput;
+import com.permission.dto.input.sysuser.SysUserInfo;
+import com.permission.dto.input.sysuser.SysUserLoginInput;
+import com.permission.dto.input.sysuser.CasUserInfo;
+import com.permission.dto.input.sysuser.SysUserInput;
 import com.permission.enumeration.PrimaryCodeEnum;
 import com.permission.enumeration.RegexEnum;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
 import com.permission.pojo.SysUser;
 import com.permission.mapper.SysUserMapper;
+import com.permission.service.SysUserRoleService;
 import com.permission.service.SysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.permission.util.*;
@@ -37,46 +38,169 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     private SysUserMapper sysUserMapper;
 
+    @Autowired
+    private SysUserRoleService sysUserRoleService;
+
+    /**
+     * 根据id查询用户
+     * @param id
+     * @return
+     */
+    @Override
+    public SysUser selectUserById(Integer id) {
+        if (id == null) {
+            return null;
+        }
+
+        return sysUserMapper.selectById(id);
+    }
+
+    /**
+     * 根据用户名查询用户
+     * @param username 用户名
+     * @return
+     */
+    @Override
+    public SysUser selectUserByUsername(String username) {
+        if (StringUtils.isEmpty(username)) {
+            return null;
+        }
+
+        return sysUserMapper.selectOne(new QueryWrapper<SysUser>().eq("username", username));
+    }
+
     /**
      * 添加用户
-     * @param sysUserRegisterInput
+     * @param sysUserInfo 当前登录的用户信息
+     * @param sysUserInput 添加用户入参
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public SysUserInfo addUser(SysUserRegisterInput sysUserRegisterInput) {
+    public SysUserInfo addUser(SysUserInfo sysUserInfo, SysUserInput sysUserInput) {
         // 参数校验
-        addUserInputValid(sysUserRegisterInput);
+        userInputValid(sysUserInput, false);
+
+        // 根据用户名查询用户
+        SysUser selectUser = selectUserByUsername(sysUserInput.getUsername());
+
+        // 用户已存在
+        ValidatedUtils.objectIsNotNuLL(selectUser, ResultEnum.USER_EXISTS);
 
         // 保存用户
-        SysUser sysUser = new SysUser();
-        sysUser.setCode(PrimaryCodeUtils.createPrimaryCode(PrimaryCodeEnum.USER));
-        sysUser.setName(sysUserRegisterInput.getName());
-        sysUser.setUsername(sysUserRegisterInput.getUsername());
         String passwordSalt = EncryptionUtils.uuid();
-        sysUser.setPassword(EncryptionUtils.getPassword(sysUserRegisterInput.getPassword(), passwordSalt));
-        sysUser.setPasswordSalt(passwordSalt);
-        sysUser.setCreateTime(new Date());
-        sysUser.setUpdateTime(new Date());
-        boolean save = save(sysUser);
-        if (! save) {
-            throw new BusinessException(ResultEnum.REGISTER_FAIL);
+        SysUser sysUser = new SysUser().setCode(PrimaryCodeUtils.createPrimaryCode(PrimaryCodeEnum.USER))
+                .setName(sysUserInput.getName())
+                .setUsername(sysUserInput.getUsername())
+                .setPassword(EncryptionUtils.getPassword(sysUserInput.getPassword(), passwordSalt))
+                .setPasswordSalt(passwordSalt)
+                .setCreateTime(new Date())
+                .setCreateUserId(sysUserInfo.getId())
+                .setCreateUserName(sysUserInfo.getName())
+                .setUpdateTime(new Date())
+                .setUpdateUserId(sysUserInfo.getId())
+                .setUpdateUserName(sysUserInfo.getName());
+
+        int saveCount = sysUserMapper.insert(sysUser);
+        if (saveCount <= 0) {
+            throw new BusinessException(ResultEnum.ADD_USER_FAIL);
         }
+
+        // 维护用户角色关系
+        sysUserRoleService.addUserRoles(sysUser.getId(), sysUserInput.getRoleIdList());
 
         return SysUserInfo.toSysUserInfo(sysUser);
     }
 
     /**
-     * 添加用户入参校验
-     * @param sysUserRegisterInput
+     * 更新用户
+     * @param sysUserInfo 当前登录的用户信息
+     * @param sysUserInput 修改用户入参
+     * @return
      */
-    private void addUserInputValid (SysUserRegisterInput sysUserRegisterInput) {
+    @Override
+    public SysUserInfo updateUser(SysUserInfo sysUserInfo, SysUserInput sysUserInput) {
+        // 参数校验
+        userInputValid(sysUserInput, true);
+
+        // 用户是否存在
+        SysUser sysUser = selectUserById(sysUserInput.getId());
+        ValidatedUtils.objectIsNuLL(sysUser, ResultEnum.USER_NOT_EXISTS);
+
+        // 修改了用户名校验修改的用户名是否存在
+        if (! sysUserInput.getUsername().equals(sysUser.getUsername())) {
+            SysUser selectSysUser = selectUserByUsername(sysUserInput.getUsername());
+            ValidatedUtils.objectIsNotNuLL(selectSysUser, ResultEnum.USERNAME_EXISTS);
+        }
+
+        // 重新加密密码
+        String newPassword = EncryptionUtils.getPassword(sysUserInput.getPassword(), sysUser.getPasswordSalt());
+
+        // 更新用户
+        sysUser.setName(sysUserInput.getName())
+                .setUsername(sysUserInput.getUsername())
+                .setPassword(newPassword)
+                .setUpdateTime(new Date())
+                .setUpdateUserId(sysUserInfo.getId())
+                .setUpdateUserName(sysUserInfo.getName());
+
+        int updateNumber = sysUserMapper.updateById(sysUser);
+        if (updateNumber <= 0) {
+            throw new BusinessException(ResultEnum.UPDATE_USER_FAIL);
+        }
+
+        // 维护用户角色关系
+        sysUserRoleService.addUserRoles(sysUser.getId(), sysUserInput.getRoleIdList());
+
+        return SysUserInfo.toSysUserInfo(sysUser);
+    }
+
+    /**
+     * 删除用户
+     * @param userId 用户id
+     * @return
+     */
+    @Override
+    public Integer deleteUser(Integer userId) {
+        // 校验参数
+        ValidatedUtils.objectIsNuLL(userId, ResultEnum.PARAM_ERROR);
+
+        // 用户是否存在
+        SysUser sysUser = sysUserMapper.selectById(userId);
+        ValidatedUtils.objectIsNuLL(sysUser, ResultEnum.USER_NOT_EXISTS);
+
+        // 删除用户
+        int deleteNumber = sysUserMapper.deleteById(userId);
+        if (deleteNumber <= 0) {
+            throw new BusinessException(ResultEnum.DELETE_USER_FAIL);
+        }
+
+        // 删除用户角色关系
+        int delUserRoleNumbers = sysUserRoleService.delUserRoles(userId);
+        if (delUserRoleNumbers <= 0) {
+            throw new BusinessException(ResultEnum.DELETE_USER_FAIL);
+        }
+
+        return userId;
+    }
+
+    /**
+     * 用户相关操作入参校验
+     * @param isUpdate 是否为更新校验
+     * @param sysUserInput
+     */
+    private void userInputValid (SysUserInput sysUserInput, boolean isUpdate) {
         // 必填参数校验
-        ValidatedUtils.objectIsNuLL(sysUserRegisterInput, ResultEnum.PARAM_ERROR);
-        ValidatedUtils.strIsNull(sysUserRegisterInput.getName(), ResultEnum.NAME_IS_NULL);
-        ValidatedUtils.strIsMatchRegex(sysUserRegisterInput.getName(), RegexEnum.NAME_MAX_LENGTH.getRegex(), ResultEnum.NAME__NOT_REGEX);
-        ValidatedUtils.strIsMatchRegex(sysUserRegisterInput.getUsername(), RegexEnum.USERNAME_MAX_LENGTH.getRegex(), ResultEnum.USERNAME_NOT_REGEX);
-        ValidatedUtils.strIsNull(sysUserRegisterInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
+        ValidatedUtils.objectIsNuLL(sysUserInput, ResultEnum.PARAM_ERROR);
+        if (isUpdate) {
+            ValidatedUtils.objectIsNuLL(sysUserInput.getId(), ResultEnum.PARAM_ERROR);
+        }
+        ValidatedUtils.strIsNull(sysUserInput.getName(), ResultEnum.NAME_IS_NULL);
+        ValidatedUtils.strIsMatchRegex(sysUserInput.getName(), RegexEnum.NAME.getRegex(), ResultEnum.NAME__NOT_REGEX);
+        ValidatedUtils.strIsNull(sysUserInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
+        ValidatedUtils.strIsMatchRegex(sysUserInput.getUsername(), RegexEnum.USERNAME.getRegex(), ResultEnum.USERNAME_NOT_REGEX);
+        ValidatedUtils.strIsNull(sysUserInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
+        ValidatedUtils.collectionIsNull(sysUserInput.getRoleIdList(), ResultEnum.NO_SELECTD_ROLE);
     }
 
     /**
@@ -85,39 +209,38 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
-    public SysUserLoginOutput login(HttpServletResponse response, SysUserLoginInput sysUserLoginInput) {
+    public CasUserInfo login(HttpServletResponse response, SysUserLoginInput sysUserLoginInput) {
         // 参数校验
         ValidatedUtils.objectIsNuLL(sysUserLoginInput, ResultEnum.PARAM_ERROR);
         ValidatedUtils.strIsNull(sysUserLoginInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
         ValidatedUtils.objectIsNuLL(sysUserLoginInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
 
         // 根据用户名查询用户
-        SysUser sysUser = sysUserMapper.selectOne(new QueryWrapper<SysUser>()
-                .eq("username", sysUserLoginInput.getUsername()));
+        SysUser sysUser = selectUserByUsername(sysUserLoginInput.getUsername());
 
         // 用户不存在
         if (sysUser == null) {
-            throw new BusinessException(ResultEnum.USER_NOT_EXISTS);
+            throw new BusinessException(ResultEnum.USERNAME_OR_PASSWORD_ERROR);
         }
 
         // 校验密码
         String password = EncryptionUtils.getPassword(sysUserLoginInput.getPassword(), sysUser.getPasswordSalt());
         if (! sysUser.getPassword().equals(password)) {
-            throw new BusinessException(ResultEnum.PASSWORD_ERROR);
+            throw new BusinessException(ResultEnum.USERNAME_OR_PASSWORD_ERROR);
         }
 
         // 保存token
         String token = sysUser.getCode();
         SysUserInfo sysUserInfo = SysUserInfo.toSysUserInfo(sysUser);
-        SysUserLoginOutput sysUserLoginOutput = new SysUserLoginOutput()
+        CasUserInfo casUserInfo = new CasUserInfo()
                 .setSysUserInfo(sysUserInfo)
                 .setToken(token);
-        RedisUtils.set(token, sysUserLoginOutput, EncryptionUtils.LOGIIN_TOKEN_DEFAULT_TIME_OUT_MS);
+        RedisUtils.set(token, casUserInfo, EncryptionUtils.LOGIIN_TOKEN_DEFAULT_TIME_OUT_MS);
 
         // 设置token到cookie
         CookieUtils.setLoginToke(response, token);
 
-        return new SysUserLoginOutput()
+        return new CasUserInfo()
                 .setSysUserInfo(sysUserInfo)
                 .setToken(token);
     }

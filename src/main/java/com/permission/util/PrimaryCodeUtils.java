@@ -2,6 +2,12 @@ package com.permission.util;
 
 import cn.hutool.core.date.DateUtil;
 import com.permission.enumeration.PrimaryCodeEnum;
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Random;
 
@@ -86,6 +92,25 @@ public class PrimaryCodeUtils {
         }
 
         return new StringBuilder(PRIMARY_CODE_KEY_PREFIX).append(primaryCodeEnum.name()).toString();
+    }
+
+    /**
+     * 创建角色编码
+     * @param roleName 角色名称
+     * @return
+     */
+    public static String createRoleCode (String roleName) {
+        String[] aaa = PinyinHelper.toHanyuPinyinStringArray('黄');
+        System.out.println(aaa.toString());
+        return null;
+    }
+
+    public static void main(String[] args) throws BadHanyuPinyinOutputFormatCombination {
+        HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
+        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+        format.setVCharType(HanyuPinyinVCharType.WITH_U_UNICODE);
+        String[] aaa = PinyinHelper.toHanyuPinyinStringArray('黄', format);
+        System.out.println(StringUtils.join(aaa));
     }
 
 }

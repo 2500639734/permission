@@ -38,7 +38,7 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
     }
 
     @Override
-    public boolean isPermission(Integer userId, HttpServletRequest request) {
+    public boolean hasPermission(Integer userId, HttpServletRequest request) {
         List<SysAcl> permissionList = selectPermissionListByUserId(userId);
         if (CollectionUtil.isNotEmpty(permissionList)) {
             // 获取用户有权限访问的接口集合

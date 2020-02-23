@@ -29,6 +29,6 @@ public interface SysAclService extends IService<SysAcl> {
      * @param request
      * @return
      */
-    boolean isPermission (Integer userId, HttpServletRequest request);
+    boolean hasPermission (Integer userId, HttpServletRequest request);
 
 }

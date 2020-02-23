@@ -1,7 +1,8 @@
 package com.permission.extension;
 
 import com.permission.annotation.CasUser;
-import com.permission.dto.input.SysUserInfo;
+import com.permission.dto.input.sysuser.CasUserInfo;
+import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.util.EncryptionUtils;
 import com.permission.util.RedisUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,8 +53,8 @@ public class CasUserAnnotationsArgumentResolver implements HandlerMethodArgument
             }
 
             // Redis中获取当前登录的用户信息返回注入到参数
-            SysUserInfo sysUserInfo = (SysUserInfo) RedisUtils.get(tokenKey);
-            return sysUserInfo;
+            CasUserInfo casUserInfo = (CasUserInfo) RedisUtils.get(tokenKey);
+            return casUserInfo.getSysUserInfo();
         }
         return null;
     }

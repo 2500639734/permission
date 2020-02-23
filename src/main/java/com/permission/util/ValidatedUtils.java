@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 
 import javax.validation.ConstraintViolation;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -74,6 +75,17 @@ public class ValidatedUtils {
     }
 
     /**
+     * 校验对象是否不为空
+     * @param obj
+     * @param resultEnum
+     */
+    public static void objectIsNotNuLL (Object obj, ResultEnum resultEnum) {
+        if (obj != null) {
+            throw new BusinessException(resultEnum);
+        }
+    }
+
+    /**
      * 校验字符串是否为空
      * @param strs
      * @param resultEnum
@@ -120,6 +132,36 @@ public class ValidatedUtils {
         if (numbers == strs.length) {
             throw new BusinessException(resultEnum);
         }
+    }
+
+    /**
+     * 校验集合是否为空
+     * @param collection
+     * @param resultEnum
+     * @param <E>
+     */
+    public static <E> void collectionIsNull (Collection<E> collection, ResultEnum resultEnum) {
+        if (collection == null || collection.size() <= 0) {
+            throw new BusinessException(resultEnum);
+        }
+    }
+
+    /**
+     * 校验数组是否为空
+     * @param objects
+     * @return
+     */
+    public static boolean isEmpty (Object[] objects) {
+        return objects == null || objects.length <= 0;
+    }
+
+    /**
+     * 校验数组是否不为空
+     * @param objects
+     * @return
+     */
+    public static boolean isNotEmpty (Object[] objects) {
+        return !isEmpty(objects);
     }
 
 }

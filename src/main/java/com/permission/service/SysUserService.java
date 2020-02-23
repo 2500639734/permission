@@ -1,9 +1,9 @@
 package com.permission.service;
 
-import com.permission.dto.input.SysUserInfo;
-import com.permission.dto.input.SysUserLoginInput;
-import com.permission.dto.input.SysUserLoginOutput;
-import com.permission.dto.input.SysUserRegisterInput;
+import com.permission.dto.input.sysuser.SysUserInfo;
+import com.permission.dto.input.sysuser.SysUserLoginInput;
+import com.permission.dto.input.sysuser.CasUserInfo;
+import com.permission.dto.input.sysuser.SysUserInput;
 import com.permission.pojo.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -21,19 +21,49 @@ import javax.servlet.http.HttpServletResponse;
 public interface SysUserService extends IService<SysUser> {
 
     /**
-     * 添加用户
-     * @param sysUserRegisterInput
+     * 根据id查询用户
+     * @param id
      * @return
      */
-    SysUserInfo addUser (SysUserRegisterInput sysUserRegisterInput);
+    SysUser selectUserById (Integer id);
+
+    /**
+     * 根据用户名查询用户
+     * @param username 用户名
+     * @return
+     */
+    SysUser selectUserByUsername (String username);
+
+    /**
+     * 添加用户
+     * @param sysUserInfo 当前登录的用户信息
+     * @param sysUserInput 添加用户入参
+     * @return
+     */
+    SysUserInfo addUser (SysUserInfo sysUserInfo,SysUserInput sysUserInput);
+
+    /**
+     * 更新用户
+     * @param sysUserInfo 当前登录的用户信息
+     * @param sysUserInput 修改用户入参
+     * @return
+     */
+    SysUserInfo updateUser (SysUserInfo sysUserInfo, SysUserInput sysUserInput);
+
+    /**
+     * 删除用户
+     * @param userId 用户id
+     * @return
+     */
+    Integer deleteUser (Integer userId);
 
     /**
      * 用户登录
      * @param response
-     * @param userLoginInput
+     * @param userLoginInput 用户登录入参
      * @return
      */
-    SysUserLoginOutput login (HttpServletResponse response, SysUserLoginInput userLoginInput);
+    CasUserInfo login (HttpServletResponse response, SysUserLoginInput userLoginInput);
 
     /**
      * 用户退出登录
