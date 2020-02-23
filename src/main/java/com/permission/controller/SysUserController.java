@@ -8,13 +8,10 @@ import com.permission.dto.input.SysUserLoginInput;
 import com.permission.dto.input.SysUserRegisterInput;
 import com.permission.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>
@@ -44,13 +41,14 @@ public class SysUserController {
 
     /**
      * 用户登录
+     * @param response
      * @param sysUserLoginInput
      * @return
      */
     @NoPermission
-    @PostMapping("/login")
-    public Result login (@RequestBody SysUserLoginInput sysUserLoginInput) {
-        return Result.success(sysUserService.login(sysUserLoginInput));
+    @GetMapping("/login")
+    public Result login (HttpServletResponse response, SysUserLoginInput sysUserLoginInput) {
+        return Result.success(sysUserService.login(response, sysUserLoginInput));
     }
 
     /**

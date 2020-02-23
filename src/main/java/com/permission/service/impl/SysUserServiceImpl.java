@@ -13,16 +13,14 @@ import com.permission.pojo.SysUser;
 import com.permission.mapper.SysUserMapper;
 import com.permission.service.SysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.permission.util.EncryptionUtils;
-import com.permission.util.PrimaryCodeUtils;
-import com.permission.util.RedisUtils;
-import com.permission.util.ValidatedUtils;
+import com.permission.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 /**
@@ -40,7 +38,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private SysUserMapper sysUserMapper;
 
     /**
-     * 用户注册
+     * 添加用户
      * @param sysUserRegisterInput
      * @return
      */
@@ -69,7 +67,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     /**
-     * 用户注册入参校验
+     * 添加用户入参校验
      * @param sysUserRegisterInput
      */
     private void addUserInputValid (SysUserRegisterInput sysUserRegisterInput) {
@@ -87,7 +85,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
-    public SysUserLoginOutput login(SysUserLoginInput sysUserLoginInput) {
+    public SysUserLoginOutput login(HttpServletResponse response, SysUserLoginInput sysUserLoginInput) {
         // 参数校验
         ValidatedUtils.objectIsNuLL(sysUserLoginInput, ResultEnum.PARAM_ERROR);
         ValidatedUtils.strIsNull(sysUserLoginInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
@@ -111,7 +109,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 保存token
         String token = sysUser.getCode();
         SysUserInfo sysUserInfo = SysUserInfo.toSysUserInfo(sysUser);
-        RedisUtils.set(token, sysUserInfo, EncryptionUtils.LOGIIN_TOKEN_DEFAULT_TIME_OUT_MS);
+        SysUserLoginOutput sysUserLoginOutput = new SysUserLoginOutput()
+                .setSysUserInfo(sysUserInfo)
+                .setToken(token);
+        RedisUtils.set(token, sysUserLoginOutput, EncryptionUtils.LOGIIN_TOKEN_DEFAULT_TIME_OUT_MS);
+
+        // 设置token到cookie
+        CookieUtils.setLoginToke(response, token);
 
         return new SysUserLoginOutput()
                 .setSysUserInfo(sysUserInfo)

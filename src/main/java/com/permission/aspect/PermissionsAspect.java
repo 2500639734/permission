@@ -2,10 +2,11 @@ package com.permission.aspect;
 
 import com.permission.annotation.NoPermission;
 import com.permission.dto.input.SysUserInfo;
+import com.permission.dto.input.SysUserLoginOutput;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
 import com.permission.service.SysAclService;
-import com.permission.util.EncryptionUtils;
+import com.permission.util.CookieUtils;
 import com.permission.util.RedisUtils;
 import com.permission.util.SpringContextUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,10 +56,10 @@ public class PermissionsAspect {
         }
 
         // 检验权限之前先检验是否已登录
-        SysUserInfo sysUserInfo = checkLogin();
+        SysUserLoginOutput sysUserLoginOutput = checkLogin();
 
         // 校验是否有请求URI接口的访问权限
-        if (! sysAclService.isPermission(sysUserInfo.getId(), SpringContextUtils.getCurrentRequest())) {
+        if (! sysAclService.isPermission(sysUserLoginOutput.getSysUserInfo().getId(), SpringContextUtils.getCurrentRequest())) {
             throw new BusinessException(ResultEnum.NOT_PERMISSION);
         }
     }
@@ -67,22 +68,23 @@ public class PermissionsAspect {
      * 检查当前用户是否已登录
      * @return
      */
-    private SysUserInfo checkLogin(){
+    private SysUserLoginOutput checkLogin(){
         HttpServletRequest currentRequest = SpringContextUtils.getCurrentRequest();
 
-        // HttpServletRequest的请求头中获取Redis中存放的用户登录Token的Key
-        String tokenKey = currentRequest.getHeader(EncryptionUtils.LOGIIN_TOKEN_KEY);
-        if (StringUtils.isEmpty(tokenKey)) {
+        // Cookie中获取当前登录用户的Token
+        String loginToken = CookieUtils.getLoginToken(currentRequest);
+
+        if (StringUtils.isEmpty(loginToken)) {
             throw new BusinessException(ResultEnum.NOT_LOGIN);
         }
 
         // Redis中获取当前登录的用户信息
-        SysUserInfo sysUserInfo = (SysUserInfo) RedisUtils.get(tokenKey);
-        if (sysUserInfo == null) {
+        SysUserLoginOutput sysUserLoginOutput = (SysUserLoginOutput) RedisUtils.get(loginToken);
+        if (sysUserLoginOutput == null) {
             throw new BusinessException(ResultEnum.NOT_LOGIN);
         }
 
-        return sysUserInfo;
+        return sysUserLoginOutput;
     }
 
 }

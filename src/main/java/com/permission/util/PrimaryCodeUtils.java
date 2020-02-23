@@ -28,7 +28,7 @@ public class PrimaryCodeUtils {
 
     /**
      * 创建唯一编码
-     * 规则：唯一编码前缀 + "-" + "yyyyMMdd" + "-" + 6位随机数 "-" + "唯一序列号"
+     * 规则：唯一编码前缀 + "-" + "yyyyMMdd" + "-" + 6位随机数 + "-" + "唯一序列号"
      * @param primaryCodeEnum
      * @return
      */

@@ -8,6 +8,7 @@ import com.permission.pojo.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>
@@ -28,10 +29,11 @@ public interface SysUserService extends IService<SysUser> {
 
     /**
      * 用户登录
+     * @param response
      * @param userLoginInput
      * @return
      */
-    SysUserLoginOutput login (SysUserLoginInput userLoginInput);
+    SysUserLoginOutput login (HttpServletResponse response, SysUserLoginInput userLoginInput);
 
     /**
      * 用户退出登录
