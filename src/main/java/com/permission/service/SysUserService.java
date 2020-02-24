@@ -1,5 +1,6 @@
 package com.permission.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.input.sysuser.SysUserLoginInput;
 import com.permission.dto.input.sysuser.CasUserInfo;
@@ -19,6 +20,13 @@ import javax.servlet.http.HttpServletResponse;
  * @since 2020-02-21
  */
 public interface SysUserService extends IService<SysUser> {
+
+    /**
+     * 分页查询用户列表
+     * @param sysUserInput
+     * @return
+     */
+    IPage<SysUser> selectSysUserList (SysUserInput sysUserInput);
 
     /**
      * 根据id查询用户

@@ -1,6 +1,8 @@
 package com.permission.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.input.sysuser.SysUserLoginInput;
 import com.permission.dto.input.sysuser.CasUserInfo;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -40,6 +43,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Autowired
     private SysUserRoleService sysUserRoleService;
+
+    @Override
+    public IPage<SysUser> selectSysUserList(SysUserInput sysUserInput) {
+        Page<SysUser> page = new Page<>(sysUserInput.getPageStart(), sysUserInput.getPageSize());
+        return sysUserMapper.selectSysUserList(page, sysUserInput);
+    }
 
     /**
      * 根据id查询用户
@@ -229,7 +238,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BusinessException(ResultEnum.USERNAME_OR_PASSWORD_ERROR);
         }
 
-        // 保存token
+        // 保存token到cookie
         String token = sysUser.getCode();
         SysUserInfo sysUserInfo = SysUserInfo.toSysUserInfo(sysUser);
         CasUserInfo casUserInfo = new CasUserInfo()
@@ -237,7 +246,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .setToken(token);
         RedisUtils.set(token, casUserInfo, EncryptionUtils.LOGIIN_TOKEN_DEFAULT_TIME_OUT_MS);
 
-        // 设置token到cookie
+        // 保存token到cookie
         CookieUtils.setLoginToke(response, token);
 
         return new CasUserInfo()

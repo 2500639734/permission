@@ -1,7 +1,9 @@
 package com.permission.exception;
 
 import com.permission.common.Result;
+import com.permission.enumeration.ResultEnum;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -13,6 +15,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class SpringExceptionResolver {
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public Result httpMessageNotReadableException (HttpMessageNotReadableException e) {
+        log.error("[请求异常]", e);
+        return Result.build(ResultEnum.PARAM_ERROR);
+    }
 
     /**
      * 统一异常处理,主要处理业务异常,统一响应json

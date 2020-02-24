@@ -1,5 +1,6 @@
 package com.permission.dto.input.sysuser;
 
+import com.permission.dto.input.PageParam;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,7 +15,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SysUserInput {
+public class SysUserInput extends PageParam {
 
     /**
      * 用户id

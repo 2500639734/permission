@@ -1,12 +1,14 @@
 package com.permission.controller;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.permission.annotation.CasUser;
 import com.permission.annotation.NoPermission;
 import com.permission.common.Result;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.input.sysuser.SysUserLoginInput;
 import com.permission.dto.input.sysuser.SysUserInput;
+import com.permission.pojo.SysUser;
 import com.permission.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,12 @@ public class SysUserController {
 
     @Autowired
     private SysUserService sysUserService;
+
+    @PostMapping("/selectSysUserList")
+    public Result selectSysUserList (@RequestBody SysUserInput sysUserInput) {
+        IPage<SysUser> sysUserIPage = sysUserService.selectSysUserList(sysUserInput);
+        return Result.success(sysUserIPage.getRecords(), (int) sysUserIPage.getTotal());
+    }
 
     /**
      * 添加用户
