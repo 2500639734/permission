@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @auther: shenke
  * @date: 2020/2/22 8:40
- * @description: 添加用户入参
+ * @description: 用户相关接口入参
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -21,6 +21,11 @@ public class SysUserInput extends PageParam {
      * 用户id
      */
     private Integer id;
+
+    /**
+     * 用户编码
+     */
+    private String code;
 
     /**
      * 用户姓名

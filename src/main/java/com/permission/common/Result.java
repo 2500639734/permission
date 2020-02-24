@@ -19,7 +19,7 @@ public class Result {
 
     private Object data;
 
-    private Integer total;
+    private Long total;
 
     public Result(Integer code, String msg) {
         this.code = code;
@@ -31,7 +31,7 @@ public class Result {
      * @param data
      * @return
      */
-    public static Result success (Object data, Integer total) {
+    public static Result success (Object data, Long total) {
         return build(ResultEnum.SUCCESS, data, total);
     }
 
@@ -95,7 +95,7 @@ public class Result {
      * @param total
      * @return
      */
-    public static Result build (ResultEnum resultEnum, Object data, Integer total) {
+    public static Result build (ResultEnum resultEnum, Object data, Long total) {
         return new Result(resultEnum.getCode(), resultEnum.getMsg(), data, total);
     }
 

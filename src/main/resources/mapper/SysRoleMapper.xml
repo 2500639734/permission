@@ -29,4 +29,19 @@
         where sur.user_id = #{userId}
     </select>
 
+    <!-- 分页查询角色列表 -->
+    <select id="selectRoleList" resultType="com.permission.pojo.SysRole">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_role as sr
+        <trim prefix="where (" suffix=")" prefixOverrides="or">
+            <if test="selectRoleInput.name != null and selectRoleInput.name != ''">
+                or sr.name like concat(#{selectRoleInput.name}, '%')
+            </if>
+            <if test="selectRoleInput.code != null and selectRoleInput.code != ''">
+                or sr.code like concat(#{selectRoleInput.code}, '%')
+            </if>
+        </trim>
+    </select>
+
 </mapper>

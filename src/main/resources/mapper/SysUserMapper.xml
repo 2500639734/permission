@@ -32,6 +32,9 @@
             <if test="sysUserInput.name != null and sysUserInput.name != ''">
                 or su.name like concat(#{sysUserInput.name}, '%')
             </if>
+            <if test="sysUserInput.code != null and sysUserInput.code != ''">
+                or su.code like concat(#{sysUserInput.code}, '%')
+            </if>
             <if test="sysUserInput.username != null and sysUserInput.username != ''">
                 or su.username like concat(#{sysUserInput.username}, '%')
             </if>

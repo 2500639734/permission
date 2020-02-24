@@ -103,13 +103,30 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int delUserRoles(Integer userId) {
+    public int deleteUserRoles(Integer userId) {
         // 校验参数
         ValidatedUtils.objectIsNuLL(userId, ResultEnum.PARAM_ERROR);
 
         // 删除用户关联的角色关系
         return sysUserRoleMapper.delete(
                 new QueryWrapper<SysUserRole>().eq("user_id", userId)
+        );
+    }
+
+    /**
+     * 删除角色关联的用户
+     * @param roleId 角色id
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int deleteRoleUsers(Integer roleId) {
+        // 校验参数
+        ValidatedUtils.objectIsNuLL(roleId, ResultEnum.PARAM_ERROR);
+
+        // 删除用户关联的角色关系
+        return sysUserRoleMapper.delete(
+                new QueryWrapper<SysUserRole>().eq("role_id", roleId)
         );
     }
 }

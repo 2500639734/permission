@@ -35,6 +35,13 @@ public interface SysUserRoleService extends IService<SysUserRole> {
      * @param userId 用户id
      * @return
      */
-    int delUserRoles(Integer userId);
+    int deleteUserRoles(Integer userId);
+
+    /**
+     * 删除角色关联的用户
+     * @param roleId 角色id
+     * @return
+     */
+    int deleteRoleUsers(Integer roleId);
 
 }

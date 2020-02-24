@@ -52,7 +52,9 @@ public enum ResultEnum {
     ROLE_EXISTS (11004, "角色已存在"),
     ROLE_NOT_EXISTS (11005, "角色不存在"),
     ADD_ROLE_FAIL (11006, "添加角色失败"),
-    NO_SELECTD_ROLE (11007, "请选择对应角色");
+    NO_SELECTD_ROLE (11007, "请选择对应角色"),
+    ROLE_NAME_EXISTS (11008, "角色名称已存在"),
+    DELETE_ROLE_FAIL (11009, "删除角色失败");
 
     /**
      * 状态码,必须唯一

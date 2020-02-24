@@ -35,7 +35,7 @@ public class SysUserController {
     @PostMapping("/selectSysUserList")
     public Result selectSysUserList (@RequestBody SysUserInput sysUserInput) {
         IPage<SysUser> sysUserIPage = sysUserService.selectSysUserList(sysUserInput);
-        return Result.success(sysUserIPage.getRecords(), (int) sysUserIPage.getTotal());
+        return Result.success(sysUserIPage.getRecords(), sysUserIPage.getTotal());
     }
 
     /**

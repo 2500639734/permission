@@ -29,6 +29,11 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
     @Autowired
     private SysAclMapper sysAclMapper;
 
+    /**
+     * 获取用户包含的权限列表
+     * @param userId
+     * @return
+     */
     @Override
     public List<SysAcl> selectPermissionListByUserId(Integer userId) {
         // 参数校验
@@ -37,6 +42,12 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
         return sysAclMapper.selectPermissionListByUserId(userId);
     }
 
+    /**
+     * 判断用户是否有访问接口权限
+     * @param userId
+     * @param request
+     * @return
+     */
     @Override
     public boolean hasPermission(Integer userId, HttpServletRequest request) {
         List<SysAcl> permissionList = selectPermissionListByUserId(userId);

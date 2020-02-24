@@ -1,7 +1,7 @@
 package com.permission.service;
 
-import com.permission.dto.input.sysrole.AddSysRoleInput;
-import com.permission.dto.input.sysrole.SelectRoleInput;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.permission.dto.input.sysrole.SysRoleInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.pojo.SysRole;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -21,10 +21,10 @@ public interface SysRoleService extends IService<SysRole> {
 
     /**
      * 查询角色列表
-     * @param selectRoleInput 查询角色列表入参
+     * @param sysRoleInput 查询角色列表入参
      * @return
      */
-    List<SysRole> selectRoleList (SelectRoleInput selectRoleInput);
+    IPage<SysRole> selectRoleList (SysRoleInput sysRoleInput);
 
     /**
      * 角色ids查询角色列表
@@ -32,13 +32,6 @@ public interface SysRoleService extends IService<SysRole> {
      * @return
      */
     List<SysRole> selectRoleListByIds (Collection<Integer> ids);
-
-    /**
-     * 用户id查询角色列表
-     * @param userId
-     * @return
-     */
-    List<SysRole> selectRoleListByUserId (Integer userId);
 
     /**
      * 根据角色编码查询角色
@@ -53,6 +46,21 @@ public interface SysRoleService extends IService<SysRole> {
      * @param sysRoleInput 添加角色入参
      * @return
      */
-    SysRole addRole(SysUserInfo sysUserInfo, AddSysRoleInput sysRoleInput);
+    SysRole addRole(SysUserInfo sysUserInfo, SysRoleInput sysRoleInput);
+
+    /**
+     * 修改角色
+     * @param sysUserInfo 当前登录用户信息
+     * @param sysRoleInput 修改角色入参
+     * @return
+     */
+    SysRole updateRole(SysUserInfo sysUserInfo, SysRoleInput sysRoleInput);
+
+    /**
+     * 删除角色
+     * @param roleId 角色id
+     * @return
+     */
+    int deleteRole (Integer roleId);
 
 }

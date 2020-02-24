@@ -184,11 +184,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BusinessException(ResultEnum.DELETE_USER_FAIL);
         }
 
-        // 删除用户角色关系
-        int delUserRoleNumbers = sysUserRoleService.delUserRoles(userId);
-        if (delUserRoleNumbers <= 0) {
-            throw new BusinessException(ResultEnum.DELETE_USER_FAIL);
-        }
+        // 删除用户关联的角色
+        sysUserRoleService.deleteUserRoles(userId);
 
         return userId;
     }

@@ -13,4 +13,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface SysRoleAclService extends IService<SysRoleAcl> {
 
+    /**
+     * 删除角色关联的权限
+     * @param roleId 角色id
+     * @return
+     */
+    int deleteRoleAcls (Integer roleId);
+
 }
