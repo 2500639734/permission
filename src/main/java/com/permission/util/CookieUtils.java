@@ -48,6 +48,7 @@ public class CookieUtils {
         Cookie cookie = new Cookie(EncryptionUtils.LOGIIN_TOKEN_KEY, token);
         // 设置有效时间，单位秒
         cookie.setMaxAge(EncryptionUtils.LOGIIN_TOKEN_DEFAULT_TIME_OUT_SECONDS);
+        // 设置应用域(文件路径)
         cookie.setPath("/");
         response.addCookie(cookie);
     }

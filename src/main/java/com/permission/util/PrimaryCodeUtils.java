@@ -94,23 +94,4 @@ public class PrimaryCodeUtils {
         return new StringBuilder(PRIMARY_CODE_KEY_PREFIX).append(primaryCodeEnum.name()).toString();
     }
 
-    /**
-     * 创建角色编码
-     * @param roleName 角色名称
-     * @return
-     */
-    public static String createRoleCode (String roleName) {
-        String[] aaa = PinyinHelper.toHanyuPinyinStringArray('黄');
-        System.out.println(aaa.toString());
-        return null;
-    }
-
-    public static void main(String[] args) throws BadHanyuPinyinOutputFormatCombination {
-        HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
-        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
-        format.setVCharType(HanyuPinyinVCharType.WITH_U_UNICODE);
-        String[] aaa = PinyinHelper.toHanyuPinyinStringArray('黄', format);
-        System.out.println(StringUtils.join(aaa));
-    }
-
 }
