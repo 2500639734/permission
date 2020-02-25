@@ -31,19 +31,34 @@ public class SysAcl implements Serializable {
     private Integer id;
 
     /**
+     * 父级权限id：0-没有父级权限
+     */
+    private Integer pId;
+
+    /**
+     * 权限名称
+     */
+    private String name;
+
+    /**
      * 权限编码
      */
     private String code;
 
     /**
-     * 请求的url相对路径
+     * 请求的url相对路径,如果是菜单则没有
      */
     private String url;
 
     /**
+     * 权限类型：10-菜单权限，20-操作(按钮)权限，30-其它
+     */
+    private Integer type;
+
+    /**
      * 创建人id
      */
-    private String createUserId;
+    private Integer createUserId;
 
     /**
      * 创建人姓名(冗余)
@@ -58,7 +73,7 @@ public class SysAcl implements Serializable {
     /**
      * 更新人id
      */
-    private String updateUserId;
+    private Integer updateUserId;
 
     /**
      * 更新人姓名(冗余)

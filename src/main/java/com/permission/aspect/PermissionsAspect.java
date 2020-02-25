@@ -58,7 +58,7 @@ public class PermissionsAspect {
         CasUserInfo casUserInfo = checkLogin();
 
         // 校验是否有请求URI接口的访问权限
-        if (! sysAclService.hasPermission(casUserInfo.getSysUserInfo().getId(), SpringContextUtils.getCurrentRequest())) {
+        if (! sysAclService.hasAcl(casUserInfo.getSysUserInfo().getId(), SpringContextUtils.getCurrentRequest())) {
             throw new BusinessException(ResultEnum.NOT_PERMISSION);
         }
     }

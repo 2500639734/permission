@@ -54,7 +54,26 @@ public enum ResultEnum {
     ADD_ROLE_FAIL (11006, "添加角色失败"),
     NO_SELECTD_ROLE (11007, "请选择对应角色"),
     ROLE_NAME_EXISTS (11008, "角色名称已存在"),
-    DELETE_ROLE_FAIL (11009, "删除角色失败");
+    DELETE_ROLE_FAIL (11009, "删除角色失败"),
+
+    /**
+     * 权限相关枚举
+     */
+    PARENT_ACL_NOT_EXISTS (12001, "父级权限不存在"),
+    ACL_NAME_IS_NULL (12002, "请填写权限名称"),
+    ACL_NAME_NOT_REGEX(12003, "请检查权限名称是否正确"),
+    ACL_CODE_IS_NULL (12004, "请填写权限编码"),
+    ACL_CODE_NOT_REGEX (12005, "请检查权限编码是否正确"),
+    ACL_TYPE_IS_NULL (12006, "请选择权限类型"),
+    ADD_ACL_FILA (12007, "添加权限失败"),
+    UPDATE_ACL_FILA (12008, "更新权限失败"),
+    DELETE_ACL_FILA (12009, "删除权限失败"),
+    ACL_NOT_EXISTS (12010, "权限不存在"),
+    ACL_NAME_EXISTS (12011, "权限名称已存在"),
+    ACL_CODE_EXISTS (12012, "权限编码已存在");
+
+
+
 
     /**
      * 状态码,必须唯一

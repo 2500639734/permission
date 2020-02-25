@@ -87,7 +87,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysUserInfo addUser(SysUserInfo sysUserInfo, SysUserInput sysUserInput) {
         // 参数校验
-        userInputValid(sysUserInput, false);
+        validUserInput(sysUserInput, false);
 
         // 根据用户名查询用户
         SysUser selectUser = selectUserByUsername(sysUserInput.getUsername());
@@ -129,7 +129,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysUserInfo updateUser(SysUserInfo sysUserInfo, SysUserInput sysUserInput) {
         // 参数校验
-        userInputValid(sysUserInput, true);
+        validUserInput(sysUserInput, true);
 
         // 用户是否存在
         SysUser sysUser = selectUserById(sysUserInput.getId());
@@ -194,7 +194,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param isUpdate 是否为更新校验
      * @param sysUserInput
      */
-    private void userInputValid (SysUserInput sysUserInput, boolean isUpdate) {
+    private void validUserInput (SysUserInput sysUserInput, boolean isUpdate) {
         // 必填参数校验
         ValidatedUtils.objectIsNuLL(sysUserInput, ResultEnum.PARAM_ERROR);
         if (isUpdate) {
