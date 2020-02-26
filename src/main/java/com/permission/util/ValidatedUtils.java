@@ -164,4 +164,26 @@ public class ValidatedUtils {
         return !isEmpty(objects);
     }
 
+    /**
+     * 校验Boolean值是否为true
+     * @param flag
+     * @param resultEnum
+     */
+    public static void isTrue (Boolean flag, ResultEnum resultEnum) {
+        if (flag == null || ! flag) {
+            throw new BusinessException(resultEnum);
+        }
+    }
+
+    /**
+     * 校验Boolean值是否为false
+     * @param flag
+     * @param resultEnum
+     */
+    public static void isFalse (Boolean flag, ResultEnum resultEnum) {
+        if (flag == null || flag) {
+            throw new BusinessException(resultEnum);
+        }
+    }
+
 }

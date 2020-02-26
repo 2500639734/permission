@@ -55,6 +55,7 @@ public enum ResultEnum {
     NO_SELECTD_ROLE (11007, "请选择对应角色"),
     ROLE_NAME_EXISTS (11008, "角色名称已存在"),
     DELETE_ROLE_FAIL (11009, "删除角色失败"),
+    ROLE_AUTHORIZATION_FAIL (11010, "角色授权失败"),
 
     /**
      * 权限相关枚举
@@ -70,7 +71,8 @@ public enum ResultEnum {
     DELETE_ACL_FILA (12009, "删除权限失败"),
     ACL_NOT_EXISTS (12010, "权限不存在"),
     ACL_NAME_EXISTS (12011, "权限名称已存在"),
-    ACL_CODE_EXISTS (12012, "权限编码已存在");
+    ACL_CODE_EXISTS (12012, "权限编码已存在"),
+    ACL_EXISTS (12013, "权限不存在");
 
 
 

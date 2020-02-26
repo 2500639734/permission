@@ -63,4 +63,12 @@ public interface SysRoleService extends IService<SysRole> {
      */
     int deleteRole (Integer roleId);
 
+    /**
+     * 角色授权
+     * @param sysUserInfo 当前登录用户信息
+     * @param sysRoleInput 角色授权入参
+     * @return
+     */
+    boolean roleAuthorization (SysUserInfo sysUserInfo, SysRoleInput sysRoleInput);
+
 }

@@ -93,4 +93,11 @@ public interface SysAclService extends IService<SysAcl> {
      */
     List<SysAcl> selectAclsByPId (Integer pId);
 
+    /**
+     * 根据ids查询权限集合
+     * @param ids 权限id集合
+     * @return
+     */
+    List<SysAcl> selectAclsByIds (List<Integer> ids);
+
 }

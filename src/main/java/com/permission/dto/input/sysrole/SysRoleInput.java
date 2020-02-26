@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 /**
  * @auther: shenke
  * @date: 2020/2/23 11:08
@@ -29,5 +31,10 @@ public class SysRoleInput extends PageParam {
      * 角色名称
      */
     private String name;
+
+    /**
+     * 角色授权id集合
+     */
+    private List<Integer> aclIds;
 
 }

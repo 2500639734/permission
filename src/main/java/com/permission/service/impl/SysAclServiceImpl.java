@@ -266,4 +266,18 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
         return sysAclMapper.selectList(new QueryWrapper<SysAcl>().eq("p_id", pId));
     }
 
+    /**
+     * 根据ids查询权限集合
+     * @param ids 权限id集合
+     * @return
+     */
+    @Override
+    public List<SysAcl> selectAclsByIds(List<Integer> ids) {
+        if (CollectionUtil.isEmpty(ids)) {
+            return null;
+        }
+
+        return sysAclMapper.selectBatchIds(ids);
+    }
+
 }

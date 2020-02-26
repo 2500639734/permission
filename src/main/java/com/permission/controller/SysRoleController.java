@@ -69,4 +69,15 @@ public class SysRoleController {
         return Result.success(sysRoleService.deleteRole(roleId));
     }
 
+    /**
+     * 角色授权
+     * @param sysUserInfo 当前登录用户信息
+     * @param sysRoleInput 角色授权入参
+     * @return
+     */
+    @PostMapping("/roleAuthorization")
+    public Result roleAuthorization (@CasUser SysUserInfo sysUserInfo, @RequestBody SysRoleInput sysRoleInput) {
+        return Result.success(sysRoleService.roleAuthorization(sysUserInfo, sysRoleInput));
+    }
+
 }

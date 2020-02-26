@@ -9,8 +9,11 @@ import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.enumeration.RegexEnum;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
+import com.permission.pojo.SysAcl;
 import com.permission.pojo.SysRole;
 import com.permission.mapper.SysRoleMapper;
+import com.permission.pojo.SysRoleAcl;
+import com.permission.service.SysAclService;
 import com.permission.service.SysRoleAclService;
 import com.permission.service.SysRoleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +50,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Autowired
     private SysRoleAclService sysRoleAclService;
+    
+    @Autowired
+    private SysAclService sysAclService;
 
     /**
      * 查询角色列表
@@ -188,6 +195,48 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         sysRoleAclService.deleteRoleAcls(roleId);
 
         return deleteRoleNumbers;
+    }
+
+    /**
+     * 角色授权
+     * @param sysUserInfo 当前登录用户信息
+     * @param sysRoleInput 角色授权入参
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean roleAuthorization(SysUserInfo sysUserInfo, SysRoleInput sysRoleInput) {
+        // 参数校验
+        ValidatedUtils.objectIsNuLL(sysRoleInput, ResultEnum.PARAM_ERROR);
+        ValidatedUtils.objectIsNuLL(sysRoleInput.getId(), ResultEnum.PARAM_ERROR);
+        ValidatedUtils.collectionIsNull(sysRoleInput.getAclIds(), ResultEnum.PARAM_ERROR);
+        
+        // 查询角色
+        SysRole sysRole = sysRoleMapper.selectById(sysRoleInput.getId());
+        ValidatedUtils.objectIsNuLL(sysRole, ResultEnum.ROLE_NOT_EXISTS);
+
+        // 查询权限集合
+        List<SysAcl> sysAclList = sysAclService.selectAclsByIds(sysRoleInput.getAclIds());
+        ValidatedUtils.collectionIsNull(sysAclList, ResultEnum.ACL_EXISTS);
+        
+        // 保存角色权限关系
+        List<SysRoleAcl> sysRoleAclList = new ArrayList<>();
+        sysAclList.forEach(sysAcl -> {
+            SysRoleAcl sysRoleAcl = new SysRoleAcl()
+                    .setRoleId(sysRoleInput.getId())
+                    .setAclId(sysAcl.getId());
+            sysRoleAclList.add(sysRoleAcl);
+        });
+        boolean authorization = sysRoleAclService.saveBatch(sysRoleAclList);
+        ValidatedUtils.isTrue(authorization, ResultEnum.ROLE_AUTHORIZATION_FAIL);
+
+        // 更新角色操作人信息
+        sysRole.setUpdateTime(new Date())
+                .setUpdateUserId(sysUserInfo.getId())
+                .setUpdateUserName(sysUserInfo.getUsername());
+        sysRoleMapper.updateById(sysRole);
+
+        return authorization;
     }
 
 }
