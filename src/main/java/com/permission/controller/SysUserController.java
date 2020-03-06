@@ -4,12 +4,14 @@ package com.permission.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.permission.annotation.CasUser;
 import com.permission.annotation.NoPermission;
+import com.permission.annotation.Permission;
 import com.permission.common.Result;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.input.sysuser.SysUserLoginInput;
 import com.permission.dto.input.sysuser.SysUserInput;
 import com.permission.pojo.SysUser;
 import com.permission.service.SysUserService;
+import com.permission.util.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,14 +74,13 @@ public class SysUserController {
 
     /**
      * 用户登录
-     * TODO 暂时修改为Get方便测试
      * @param response
      * @param sysUserLoginInput
      * @return
      */
     @NoPermission
-    @GetMapping("/login")
-    public Result login (HttpServletResponse response, SysUserLoginInput sysUserLoginInput) {
+    @PostMapping("/login")
+    public Result login (HttpServletResponse response, @RequestBody SysUserLoginInput sysUserLoginInput) {
         return Result.success(sysUserService.login(response, sysUserLoginInput));
     }
 
@@ -92,6 +93,16 @@ public class SysUserController {
     public Result logout (HttpServletRequest request) {
         sysUserService.logout(request);
         return Result.success();
+    }
+
+    /**
+     * 获取当前登录的用户信息
+     * @param request
+     * @return
+     */
+    @PostMapping("/getCurrentCasUserInfo")
+    public Result getCurrentCasUserInfo(HttpServletRequest request) {
+        return Result.success(CookieUtils.currentCasUserInfo(request));
     }
 
 }

@@ -1,4 +1,4 @@
-package com.permission.dto.output;
+package com.permission.dto.output.sysacl;
 
 import com.permission.enumeration.SysAclTypeEnum;
 import com.permission.pojo.SysAcl;
@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.springframework.beans.BeanUtils;
+
+import java.io.Serializable;
 
 /**
  * @auther: shenke
@@ -15,35 +17,12 @@ import org.springframework.beans.BeanUtils;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SysAclOutput {
+public class SysAclOutput extends SysAcl implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
-     * 父级权限id：0-没有父级权限
-     */
-    private Integer pId;
-
-    /**
-     * 权限名称
-     */
-    private String name;
-
-    /**
-     * 权限编码
-     */
-    private String code;
-
-    /**
-     * 请求的url相对路径,如果是菜单则没有
-     */
-    private String url;
-
-    /**
-     * 权限类型：10-菜单权限，20-操作权限，30-其它
-     */
-    private Integer type;
-
-    /**
-     * 权限类型描述：菜单权限，操作权限，其它
+     * 权限类型描述
      */
     private String typeDesc;
 

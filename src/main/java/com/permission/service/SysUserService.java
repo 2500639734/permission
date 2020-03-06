@@ -1,9 +1,9 @@
 package com.permission.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.permission.dto.input.sysuser.CasUserInfo;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.input.sysuser.SysUserLoginInput;
-import com.permission.dto.input.sysuser.CasUserInfo;
 import com.permission.dto.input.sysuser.SysUserInput;
 import com.permission.pojo.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -71,7 +71,7 @@ public interface SysUserService extends IService<SysUser> {
      * @param userLoginInput 用户登录入参
      * @return
      */
-    CasUserInfo login (HttpServletResponse response, SysUserLoginInput userLoginInput);
+    String login (HttpServletResponse response, SysUserLoginInput userLoginInput);
 
     /**
      * 用户退出登录

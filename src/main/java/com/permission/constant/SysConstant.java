@@ -8,8 +8,8 @@ package com.permission.constant;
 public class SysConstant {
 
     /**
-     * 没有父级id的权限PID=0
+     * 根节点的id为0
      */
-    public static final Integer NO_PARENT_ID = 0;
+    public static final Integer ROOT_ID = 0;
 
 }

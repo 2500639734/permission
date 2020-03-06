@@ -12,9 +12,9 @@ import lombok.Getter;
 @Getter
 public enum SysAclTypeEnum {
 
-    MENU (10, "菜单"),
-    OPERATION (20, "操作"),
-    OTHER(30, "其它");
+    MENU (10, "菜单权限"),
+    BUTTON (20, "按钮权限"),
+    INTERFACE(30, "接口访问权限");
 
     /**
      * 唯一标识

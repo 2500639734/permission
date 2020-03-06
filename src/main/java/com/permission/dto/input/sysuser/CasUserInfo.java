@@ -1,8 +1,12 @@
 package com.permission.dto.input.sysuser;
 
+import com.permission.dto.SysMenuTree;
+import com.permission.dto.output.sysacl.SysAclTree;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.util.List;
 
 /**
  * @auther: shenke
@@ -20,8 +24,8 @@ public class CasUserInfo {
     private SysUserInfo sysUserInfo;
 
     /**
-     * 用户登录成功的Token
+     * 用户所包含的菜单树形列表
      */
-    private String token;
+    private List<SysMenuTree> sysMenuTreeList;
 
 }

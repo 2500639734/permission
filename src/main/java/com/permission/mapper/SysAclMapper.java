@@ -32,8 +32,9 @@ public interface SysAclMapper extends BaseMapper<SysAcl> {
     /**
      * 获取用户包含的权限列表
      * @param userId
+     * @param typeList 类型集合,可选
      * @return
      */
-    List<SysAcl> selectPermissionListByUserId (@Param("userId") Integer userId);
+    List<SysAcl> selectPermissionListByUserId (@Param("userId") Integer userId, @Param("typeList") List<Integer> typeList);
 
 }

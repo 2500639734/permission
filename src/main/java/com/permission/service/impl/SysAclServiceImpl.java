@@ -7,9 +7,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.permission.constant.SysConstant;
 import com.permission.dto.input.sysacl.SysAclInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
-import com.permission.dto.output.SysAclOutput;
+import com.permission.dto.output.sysacl.SysAclOutput;
+import com.permission.dto.output.sysacl.SysAclTree;
 import com.permission.enumeration.RegexEnum;
 import com.permission.enumeration.ResultEnum;
+import com.permission.enumeration.SysAclTypeEnum;
 import com.permission.exception.BusinessException;
 import com.permission.pojo.SysAcl;
 import com.permission.mapper.SysAclMapper;
@@ -20,12 +22,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -167,7 +167,7 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
         }
         ValidatedUtils.objectIsNuLL(sysAclInput.getPId(), ResultEnum.PARAM_ERROR);
         // 有父级权限则校验父级权限是否存在
-        if (! SysConstant.NO_PARENT_ID.equals(sysAclInput.getPId())) {
+        if (! SysConstant.ROOT_ID.equals(sysAclInput.getPId())) {
             SysAcl parentSysAcl = selectParentAclByPid(sysAclInput.getPId());
             ValidatedUtils.objectIsNuLL(parentSysAcl, ResultEnum.PARENT_ACL_NOT_EXISTS);
         }
@@ -180,15 +180,16 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
 
     /**
      * 获取用户包含的权限列表
-     * @param userId
+     * @param userId 用户id
+     * @param typeList 类型集合,可选
      * @return
      */
     @Override
-    public List<SysAcl> selectAclListByUserId(Integer userId) {
+    public List<SysAcl> selectAclListByUserId(Integer userId, List<Integer> typeList) {
         // 参数校验
         ValidatedUtils.objectIsNuLL(userId, ResultEnum.PARAM_ERROR);
 
-        return sysAclMapper.selectPermissionListByUserId(userId);
+        return sysAclMapper.selectPermissionListByUserId(userId, typeList);
     }
 
     /**
@@ -199,7 +200,7 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
      */
     @Override
     public boolean hasAcl(Integer userId, HttpServletRequest request) {
-        List<SysAcl> permissionList = selectAclListByUserId(userId);
+        List<SysAcl> permissionList = selectAclListByUserId(userId, null);
         if (CollectionUtil.isNotEmpty(permissionList)) {
             // 获取用户有权限访问的接口集合
             Set<String> permissionSet = permissionList.stream().map(SysAcl::getUrl).collect(Collectors.toSet());
@@ -217,7 +218,7 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
      */
     @Override
     public SysAcl selectParentAclByPid(Integer pId) {
-        if (pId == null || SysConstant.NO_PARENT_ID.equals(pId)) {
+        if (pId == null || SysConstant.ROOT_ID.equals(pId)) {
             return null;
         }
 
@@ -250,20 +251,6 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
         }
 
         return sysAclMapper.selectOne(new QueryWrapper<SysAcl>().eq("code", code));
-    }
-
-    /**
-     * 根据父级权限id查询所有子权限
-     * @param pId
-     * @return
-     */
-    @Override
-    public List<SysAcl> selectAclsByPId(Integer pId) {
-        if (pId == null) {
-            return null;
-        }
-
-        return sysAclMapper.selectList(new QueryWrapper<SysAcl>().eq("p_id", pId));
     }
 
     /**

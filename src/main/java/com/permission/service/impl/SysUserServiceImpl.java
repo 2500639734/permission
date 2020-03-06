@@ -3,6 +3,7 @@ package com.permission.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.permission.dto.SysMenuTree;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.input.sysuser.SysUserLoginInput;
 import com.permission.dto.input.sysuser.CasUserInfo;
@@ -13,6 +14,7 @@ import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
 import com.permission.pojo.SysUser;
 import com.permission.mapper.SysUserMapper;
+import com.permission.service.SysMenuService;
 import com.permission.service.SysUserRoleService;
 import com.permission.service.SysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -39,6 +42,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private SysMenuService sysMenuService;
 
     @Autowired
     private SysUserRoleService sysUserRoleService;
@@ -205,6 +211,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         ValidatedUtils.strIsNull(sysUserInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
         ValidatedUtils.strIsMatchRegex(sysUserInput.getUsername(), RegexEnum.USERNAME.getRegex(), ResultEnum.USERNAME_NOT_REGEX);
         ValidatedUtils.strIsNull(sysUserInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
+        ValidatedUtils.strIsMatchRegex(sysUserInput.getUsername(), RegexEnum.PASSWORD.getRegex(), ResultEnum.PASSWORD_NOT_REGEX);
         ValidatedUtils.collectionIsNull(sysUserInput.getRoleIdList(), ResultEnum.NO_SELECTD_ROLE);
     }
 
@@ -214,7 +221,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
-    public CasUserInfo login(HttpServletResponse response, SysUserLoginInput sysUserLoginInput) {
+    public String login(HttpServletResponse response, SysUserLoginInput sysUserLoginInput) {
         // 参数校验
         ValidatedUtils.objectIsNuLL(sysUserLoginInput, ResultEnum.PARAM_ERROR);
         ValidatedUtils.strIsNull(sysUserLoginInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
@@ -234,20 +241,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BusinessException(ResultEnum.USERNAME_OR_PASSWORD_ERROR);
         }
 
+        // 设置用户拥有的菜单树形列表
+        List<SysMenuTree> sysMenuTreeList = sysMenuService.selectMenuTreeByUserId(sysUser.getId());
+        CasUserInfo casUserInfo = new CasUserInfo()
+                .setSysUserInfo(SysUserInfo.toSysUserInfo(sysUser))
+                .setSysMenuTreeList(sysMenuTreeList);
+
         // 保存token到cookie
         String token = sysUser.getCode();
-        SysUserInfo sysUserInfo = SysUserInfo.toSysUserInfo(sysUser);
-        CasUserInfo casUserInfo = new CasUserInfo()
-                .setSysUserInfo(sysUserInfo)
-                .setToken(token);
         RedisUtils.set(token, casUserInfo, EncryptionUtils.LOGIIN_TOKEN_DEFAULT_TIME_OUT_MS);
 
         // 保存token到cookie
         CookieUtils.setLoginToke(response, token);
 
-        return new CasUserInfo()
-                .setSysUserInfo(sysUserInfo)
-                .setToken(token);
+        return token;
     }
 
     /**
@@ -256,7 +263,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     @Override
     public void logout(HttpServletRequest request) {
-        String tokenKey = request.getHeader(EncryptionUtils.LOGIIN_TOKEN_KEY);
+        // 从cookie中获取token信息
+        String tokenKey = CookieUtils.getLoginToken(request);
         // 删除Redis中的Token信息
         if (StringUtils.isNotEmpty(tokenKey)) {
             RedisUtils.del(tokenKey);

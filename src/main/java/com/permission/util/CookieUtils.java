@@ -1,5 +1,8 @@
 package com.permission.util;
 
+import com.permission.dto.input.sysuser.CasUserInfo;
+import com.permission.enumeration.ResultEnum;
+import com.permission.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.Cookie;
@@ -53,5 +56,25 @@ public class CookieUtils {
         response.addCookie(cookie);
     }
 
+    /**
+     * 获取当前登录用户信息
+     * Cookie中获取LoginToken
+     * 依据LoginToken获取登录用户信息
+     * @param request
+     * @return
+     */
+    public static CasUserInfo currentCasUserInfo (HttpServletRequest request) {
+        String loginToken = getLoginToken(request);
+        if (StringUtils.isEmpty(loginToken)) {
+            throw new BusinessException(ResultEnum.NOT_LOGIN);
+        }
+
+        CasUserInfo casUserInfo = (CasUserInfo) RedisUtils.get(loginToken);
+        if (casUserInfo == null) {
+            throw new BusinessException(ResultEnum.NOT_LOGIN);
+        }
+
+        return casUserInfo;
+    }
 
 }

@@ -46,9 +46,14 @@ public class SysAcl implements Serializable {
     private String code;
 
     /**
-     * 请求的url相对路径,如果是菜单则没有
+     * 菜单：前端的路由路径，按钮及其它：接口路径
      */
     private String url;
+
+    /**
+     * 菜单及按钮的图标，可选
+     */
+    private String icon;
 
     /**
      * 权限类型：10-菜单权限，20-操作(按钮)权限，30-其它

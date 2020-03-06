@@ -5,10 +5,9 @@ import com.permission.dto.input.sysuser.CasUserInfo;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
 import com.permission.service.SysAclService;
+import com.permission.service.SysUserService;
 import com.permission.util.CookieUtils;
-import com.permission.util.RedisUtils;
 import com.permission.util.SpringContextUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -16,8 +15,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
 /**
@@ -28,6 +25,9 @@ import java.lang.reflect.Method;
 @Aspect
 @Component
 public class PermissionsAspect {
+
+    @Autowired
+    private SysUserService sysUserService;
 
     @Autowired
     private SysAclService sysAclService;
@@ -54,36 +54,13 @@ public class PermissionsAspect {
             return;
         }
 
-        // 检验权限之前先检验是否已登录
-        CasUserInfo casUserInfo = checkLogin();
+        // 获取当前登录的用户信息
+        CasUserInfo casUserInfo = CookieUtils.currentCasUserInfo(SpringContextUtils.getCurrentRequest());
 
         // 校验是否有请求URI接口的访问权限
         if (! sysAclService.hasAcl(casUserInfo.getSysUserInfo().getId(), SpringContextUtils.getCurrentRequest())) {
             throw new BusinessException(ResultEnum.NOT_PERMISSION);
         }
-    }
-
-    /**
-     * 检查当前用户是否已登录
-     * @return
-     */
-    private CasUserInfo checkLogin(){
-        HttpServletRequest currentRequest = SpringContextUtils.getCurrentRequest();
-
-        // Cookie中获取当前登录用户的Token
-        String loginToken = CookieUtils.getLoginToken(currentRequest);
-
-        if (StringUtils.isEmpty(loginToken)) {
-            throw new BusinessException(ResultEnum.NOT_LOGIN);
-        }
-
-        // Redis中获取当前登录的用户信息
-        CasUserInfo casUserInfo = (CasUserInfo) RedisUtils.get(loginToken);
-        if (casUserInfo == null) {
-            throw new BusinessException(ResultEnum.NOT_LOGIN);
-        }
-
-        return casUserInfo;
     }
 
 }

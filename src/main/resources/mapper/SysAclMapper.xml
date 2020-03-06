@@ -33,6 +33,12 @@
         left join sys_user_role as sur on sur.role_id = sr.id
         left join sys_user as su on su.id = sur.user_id
         where su.id = #{userId}
+        <if test="typeList != null and typeList.size > 0">
+            and sa.type in
+            <foreach item="type" collection="typeList" separator="," open="(" close=")">
+                #{type}
+            </foreach>
+        </if>
     </select>
 
     <!-- 分页查询权限列表 -->

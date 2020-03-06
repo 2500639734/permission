@@ -35,14 +35,15 @@ public enum ResultEnum {
     USERNAME_IS_NULL (10001, "请填写用户名"),
     USERNAME_NOT_REGEX (1002, "请检查用户名是否正确"),
     PASSWORD_IS_NULL (10003, "请填写密码"),
-    USER_NOT_EXISTS (10004, "用户不存在"),
-    USER_EXISTS (10005, "用户已存在"),
-    USERNAME_OR_PASSWORD_ERROR (10006, "用户名或密码错误"),
-    PASSWORD_ENCRYPTION_FAIL (10007, "密码加密失败"),
-    ADD_USER_FAIL (10008, "添加用户失败"),
-    UPDATE_USER_FAIL (10009, "更新用户失败"),
-    DELETE_USER_FAIL (10010, "删除用户失败"),
-    USERNAME_EXISTS (10011, "用户名已存在"),
+    PASSWORD_NOT_REGEX (10004, "请检查密码是否正确"),
+    USER_NOT_EXISTS (10005, "用户不存在"),
+    USER_EXISTS (10006, "用户已存在"),
+    USERNAME_OR_PASSWORD_ERROR (10007, "用户名或密码错误"),
+    PASSWORD_ENCRYPTION_FAIL (10008, "密码加密失败"),
+    ADD_USER_FAIL (10009, "添加用户失败"),
+    UPDATE_USER_FAIL (10010, "更新用户失败"),
+    DELETE_USER_FAIL (10011, "删除用户失败"),
+    USERNAME_EXISTS (10012, "用户名已存在"),
 
     /**
      * 角色相关枚举
@@ -86,19 +87,5 @@ public enum ResultEnum {
      * 提示消息
      */
     private String msg;
-
-    /**
-     * 根据状态码获取对应的ResultEnum
-     * @param code
-     * @return
-     */
-    public static ResultEnum getByCode (Integer code) {
-        for (ResultEnum resultEnum: ResultEnum.values()) {
-            if (resultEnum.code.equals(code)) {
-                return resultEnum;
-            }
-        }
-        return null;
-    }
 
 }

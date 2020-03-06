@@ -3,7 +3,8 @@ package com.permission.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.permission.dto.input.sysacl.SysAclInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
-import com.permission.dto.output.SysAclOutput;
+import com.permission.dto.output.sysacl.SysAclOutput;
+import com.permission.dto.output.sysacl.SysAclTree;
 import com.permission.pojo.SysAcl;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -51,11 +52,12 @@ public interface SysAclService extends IService<SysAcl> {
     int deleteSysAcl (Integer id);
 
     /**
-     * 获取用户包含的权限列表
+     * 获取用户拥有的权限列表
      * @param userId
+     * @param typeList
      * @return
      */
-    List<SysAcl> selectAclListByUserId (Integer userId);
+    List<SysAcl> selectAclListByUserId (Integer userId, List<Integer> typeList);
 
     /**
      * 判断用户是否有访问接口权限
@@ -85,13 +87,6 @@ public interface SysAclService extends IService<SysAcl> {
      * @return
      */
     SysAcl selectAclByCode (String code);
-
-    /**
-     * 根据父级权限id查询所有子权限
-     * @param pId
-     * @return
-     */
-    List<SysAcl> selectAclsByPId (Integer pId);
 
     /**
      * 根据ids查询权限集合
