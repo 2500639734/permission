@@ -1,7 +1,6 @@
 package com.permission.dto.input.sysuser;
 
 import com.permission.dto.SysMenuTree;
-import com.permission.dto.output.sysacl.SysAclTree;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;

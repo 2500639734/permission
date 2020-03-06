@@ -6,7 +6,7 @@ import com.permission.annotation.CasUser;
 import com.permission.common.Result;
 import com.permission.dto.input.sysacl.SysAclInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
-import com.permission.dto.output.sysacl.SysAclOutput;
+import com.permission.dto.SysAclDto;
 import com.permission.enumeration.ResultEnum;
 import com.permission.service.SysAclService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class SysAclController {
      */
     @PostMapping("/selectAclList")
     public Result selectAclList (@RequestBody SysAclInput sysAclInput) {
-        IPage<SysAclOutput> sysAclOutputIPage = sysAclService.selectAclList(sysAclInput);
+        IPage<SysAclDto> sysAclOutputIPage = sysAclService.selectAclList(sysAclInput);
         return Result.build(ResultEnum.SUCCESS, sysAclOutputIPage.getRecords(), sysAclOutputIPage.getTotal());
     }
 

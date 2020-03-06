@@ -7,8 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.permission.constant.SysConstant;
 import com.permission.dto.input.sysacl.SysAclInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
-import com.permission.dto.output.sysacl.SysAclOutput;
-import com.permission.dto.output.sysacl.SysAclTree;
+import com.permission.dto.SysAclDto;
 import com.permission.enumeration.RegexEnum;
 import com.permission.enumeration.ResultEnum;
 import com.permission.enumeration.SysAclTypeEnum;
@@ -22,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -48,20 +46,20 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
      * @return
      */
     @Override
-    public IPage<SysAclOutput> selectAclList(SysAclInput sysAclInput) {
+    public IPage<SysAclDto> selectAclList(SysAclInput sysAclInput) {
         // 分页获取权限列表
         Page page = new Page(sysAclInput.getPageStart(), sysAclInput.getPageSize());
         IPage<SysAcl> sysAclIPage = sysAclMapper.selectAclList(page, sysAclInput);
         List<SysAcl> sysAclList = sysAclIPage.getRecords();
-        List<SysAclOutput> sysAclOutputList = new ArrayList<>();
+        List<SysAclDto> sysAclOutputList = new ArrayList<>();
 
         // 类型转换
         if (CollectionUtil.isNotEmpty(sysAclList)) {
-            sysAclList.forEach(sysAcl -> sysAclOutputList.add(SysAclOutput.toSysAclOutPut(sysAcl)));
+            sysAclList.forEach(sysAcl -> sysAclOutputList.add(SysAclDto.toSysAclOutPut(sysAcl)));
         }
 
         // 返回
-        IPage<SysAclOutput> sysAclOutputIPage = new Page<>();
+        IPage<SysAclDto> sysAclOutputIPage = new Page<>();
         sysAclOutputIPage.setRecords(sysAclOutputList);
         sysAclOutputIPage.setTotal(sysAclIPage.getTotal());
         return sysAclOutputIPage;
@@ -181,15 +179,14 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
     /**
      * 获取用户包含的权限列表
      * @param userId 用户id
-     * @param typeList 类型集合,可选
      * @return
      */
     @Override
-    public List<SysAcl> selectAclListByUserId(Integer userId, List<Integer> typeList) {
+    public List<SysAcl> selectAclListByUserId(Integer userId) {
         // 参数校验
         ValidatedUtils.objectIsNuLL(userId, ResultEnum.PARAM_ERROR);
 
-        return sysAclMapper.selectPermissionListByUserId(userId, typeList);
+        return sysAclMapper.selectPermissionListByUserId(userId);
     }
 
     /**
@@ -200,12 +197,25 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
      */
     @Override
     public boolean hasAcl(Integer userId, HttpServletRequest request) {
-        List<SysAcl> permissionList = selectAclListByUserId(userId, null);
-        if (CollectionUtil.isNotEmpty(permissionList)) {
-            // 获取用户有权限访问的接口集合
-            Set<String> permissionSet = permissionList.stream().map(SysAcl::getUrl).collect(Collectors.toSet());
-            // 是否包含当前请求的接口
-            return permissionSet.contains(request.getRequestURI());
+        // 获取用户有权限访问的接口集合
+        List<SysAcl> sysAclList = selectAclListByUserId(userId);
+        if (CollectionUtil.isNotEmpty(sysAclList)) {
+            // 权限集合转KV，K：请求URI，V：请求方式
+            Map<String, Integer> syaAclMap = sysAclList.stream().collect(Collectors.toMap(SysAcl::getUrl, SysAcl::getType));
+
+            // 接口权限不足
+            if (! syaAclMap.containsKey(request.getRequestURI())) {
+                return false;
+            }
+
+            Integer type = syaAclMap.get(request.getRequestURI());
+
+            // 请求方式不匹配
+            if (! SysAclTypeEnum.ALL.getCode().equals(type)
+                && ! SysAclTypeEnum.getNameByCode(type).equals(request.getMethod())) {
+                return false;
+            }
+
         }
 
         return false;

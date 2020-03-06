@@ -12,9 +12,11 @@ import lombok.Getter;
 @Getter
 public enum SysAclTypeEnum {
 
-    MENU (10, "菜单权限"),
-    BUTTON (20, "按钮权限"),
-    INTERFACE(30, "接口访问权限");
+    GET (10),
+    POST (20),
+    PUT(30),
+    DELETE(40),
+    ALL(50);
 
     /**
      * 唯一标识
@@ -22,23 +24,18 @@ public enum SysAclTypeEnum {
     private Integer code;
 
     /**
-     * 描述
-     */
-    private String desc;
-
-    /**
-     * 根据编码获取描述
+     * 根据唯一标识获取权限类型名称
      * @param code
      * @return
      */
-    public static String getDescByCode (Integer code) {
+    public static String getNameByCode(Integer code) {
         if (code == null) {
             return null;
         }
 
         for (SysAclTypeEnum sysAclTypeEnum : SysAclTypeEnum.values()) {
-            if (sysAclTypeEnum.getCode().equals(code)) {
-                return sysAclTypeEnum.getDesc();
+            if (sysAclTypeEnum.code == code) {
+                return sysAclTypeEnum.name();
             }
         }
 

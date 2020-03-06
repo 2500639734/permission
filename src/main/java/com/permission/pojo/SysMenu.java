@@ -45,7 +45,7 @@ public class SysMenu implements Serializable {
     private String path;
 
     /**
-     * 图标，可选
+     * 图标
      */
     private String icon;
 

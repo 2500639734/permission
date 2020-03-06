@@ -1,4 +1,4 @@
-package com.permission.dto.output.sysacl;
+package com.permission.dto;
 
 import com.permission.enumeration.SysAclTypeEnum;
 import com.permission.pojo.SysAcl;
@@ -17,24 +17,24 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SysAclOutput extends SysAcl implements Serializable {
+public class SysAclDto extends SysAcl implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 权限类型描述
+     * 权限类型对应的请求方式
      */
-    private String typeDesc;
+    private String typeMethod;
 
     /**
      * sysAcl -> SysAclOutput
      * @param sysAcl
      * @return
      */
-    public static SysAclOutput toSysAclOutPut (SysAcl sysAcl) {
-        SysAclOutput sysAclOutput = new SysAclOutput();
+    public static SysAclDto toSysAclOutPut (SysAcl sysAcl) {
+        SysAclDto sysAclOutput = new SysAclDto();
         BeanUtils.copyProperties(sysAcl, sysAclOutput);
-        sysAclOutput.setTypeDesc(SysAclTypeEnum.getDescByCode(sysAcl.getType()));
+        sysAclOutput.setTypeMethod(SysAclTypeEnum.getNameByCode(sysAcl.getType()));
         return sysAclOutput;
     }
 
