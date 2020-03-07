@@ -1,6 +1,8 @@
 package com.permission.config;
 
 import com.permission.extension.CasUserAnnotationsArgumentResolver;
+import com.permission.interceptor.LoginInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -17,14 +19,19 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    @Autowired
+    private LoginInterceptor loginInterceptor;
+
     /**
      * 配置URL请求的拦截策略
      * @param registry
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 配置Http请求拦截器拦截所有请求
-        // registry.addInterceptor(httpInterceptor).addPathPatterns("/**");
+        // 配置登录拦截器
+        registry.addInterceptor(loginInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/sys-user/login");
     }
 
     /**

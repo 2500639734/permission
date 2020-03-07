@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
@@ -27,14 +28,14 @@ public class EncryptionUtils {
     private static final Integer DEFAULT_MD5_TIMES = 5;
 
     /**
-     * 系统用户登录Token前缀
-     */
-    public static final String LOGIIN_TOKEN_PREFIX = "user_login_";
-
-    /**
-     * 系统用户登录Token默认超时时间毫秒
+     * 用户登录Token默认超时时间2小时
      */
     public static final long LOGIIN_TOKEN_DEFAULT_TIME_OUT_MS = 1000 * 60 * 60 * 2;
+
+    /**
+     * 用户登录Token默认超时时间2小时
+     */
+    public static final int LOGIIN_TOKEN_DEFAULT_TIME_OUT_SECONDS = (int) (LOGIIN_TOKEN_DEFAULT_TIME_OUT_MS / 1000);
 
     /**
      * 请求接口时header中携带的获取token的key
@@ -50,7 +51,7 @@ public class EncryptionUtils {
      */
     public static String getPassword (String password, String passwordSalt) {
         if (StringUtils.isEmpty(password ) || StringUtils.isEmpty(passwordSalt)) {
-            throw new BusinessException(ResultEnum.LOGIN_USER_PASSWORD_ENCRYPTION_FAIL);
+            throw new BusinessException(ResultEnum.PASSWORD_ENCRYPTION_FAIL);
         }
 
         String oldPassword = new StringBuilder(password).append(passwordSalt).toString();
@@ -58,18 +59,6 @@ public class EncryptionUtils {
             oldPassword = md5(oldPassword);
         }
         return oldPassword;
-    }
-
-    /**
-     * 获取Token
-     * 生成规则：前缀 + 16位uuid
-     * @param prefix Token前缀,EncryptionUtils中
-     * @return token
-     */
-    public static String token (String prefix) {
-        return new StringBuilder(LOGIIN_TOKEN_PREFIX)
-                .append(uuid())
-                .toString();
     }
 
     /**
@@ -93,6 +82,32 @@ public class EncryptionUtils {
      */
     public static String uuid () {
         return UUID.randomUUID().toString();
+    }
+
+    /**
+     * 对字符串进行UTF8编码
+     * @param str
+     * @return
+     */
+    public static String encodeUTF8 (String str) {
+        try {
+            return URLEncoder.encode(str, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 对字符串进行UTF8解码
+     * @param str
+     * @return
+     */
+    public static String decodeUTF8 (String str) {
+        try {
+            return URLEncoder.encode(str, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

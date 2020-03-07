@@ -36,24 +36,14 @@ public class SysUser implements Serializable {
     private String name;
 
     /**
-     * 用户名
-     */
-    private String username;
-
-    /**
      * 用户编码
      */
     private String code;
 
     /**
-     * 手机号码
+     * 用户名
      */
-    private String phone;
-
-    /**
-     * 邮箱
-     */
-    private String email;
+    private String username;
 
     /**
      * 密码
@@ -68,7 +58,7 @@ public class SysUser implements Serializable {
     /**
      * 创建人id
      */
-    private String createUserId;
+    private Integer createUserId;
 
     /**
      * 创建人姓名(冗余)
@@ -83,7 +73,7 @@ public class SysUser implements Serializable {
     /**
      * 更新人id
      */
-    private String updateUserId;
+    private Integer updateUserId;
 
     /**
      * 更新人姓名(冗余)

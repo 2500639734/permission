@@ -1,53 +1,58 @@
-package com.permission.dto.input;
+package com.permission.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import java.util.Date;
+import com.baomidou.mybatisplus.annotation.TableId;
+import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
-import java.util.Date;
-
 /**
- * @auther: shenke
- * @date: 2020/2/21 22:20
- * @description: 系统用户信息
+ * <p>
+ * 菜单表
+ * </p>
+ *
+ * @author shenke
+ * @since 2020-03-06
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ToString
-public class SysUserInfo implements Serializable {
+public class SysMenu implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
-     * 用户id
+     * 菜单id
      */
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * 用户姓名
+     * 父级菜单id：0-当前菜单为父级菜单
+     */
+    private Integer pId;
+
+    /**
+     * 菜单名称
      */
     private String name;
 
     /**
-     * 用户名
+     * 前端路由路径
      */
-    private String username;
+    private String path;
 
     /**
-     * 用户编码
+     * 图标
      */
-    private String code;
+    private String icon;
 
     /**
-     * 手机号码
+     * 菜单类型：10-菜单，20-按钮
      */
-    private String phone;
-
-    /**
-     * 邮箱
-     */
-    private String email;
+    private Integer type;
 
     /**
      * 创建人id
@@ -79,9 +84,5 @@ public class SysUserInfo implements Serializable {
      */
     private Date updateTime;
 
-    /**
-     * 用户登录成功的Token
-     */
-    private String token;
 
 }

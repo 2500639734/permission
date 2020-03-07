@@ -43,7 +43,7 @@ public class SysRole implements Serializable {
     /**
      * 创建人id
      */
-    private String createUserId;
+    private Integer createUserId;
 
     /**
      * 创建人姓名(冗余)
@@ -58,7 +58,7 @@ public class SysRole implements Serializable {
     /**
      * 更新人id
      */
-    private String updateUserId;
+    private Integer updateUserId;
 
     /**
      * 更新人姓名(冗余)

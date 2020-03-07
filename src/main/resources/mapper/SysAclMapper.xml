@@ -5,8 +5,10 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.permission.pojo.SysAcl">
         <id column="id" property="id" />
+        <result column="name" property="name" />
         <result column="code" property="code" />
         <result column="url" property="url" />
+        <result column="type" property="type" />
         <result column="create_user_id" property="createUserId" />
         <result column="create_user_name" property="createUserName" />
         <result column="create_time" property="createTime" />
@@ -17,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, code, url, create_user_id, create_user_name, create_time, update_user_id, update_user_name, update_time
+        id, name, code, url, type, create_user_id, create_user_name, create_time, update_user_id, update_user_name, update_time
     </sql>
 
     <!-- 获取用户包含的权限列表 -->
@@ -30,6 +32,17 @@
         left join sys_user_role as sur on sur.role_id = sr.id
         left join sys_user as su on su.id = sur.user_id
         where su.id = #{userId}
+    </select>
+
+    <!-- 分页查询权限列表 -->
+    <select id="selectAclList" resultType="com.permission.pojo.SysAcl">
+        select
+            <include refid="Base_Column_List"/>
+        from sys_acl as sa
+        where 1 = 1
+        <if test="sysAclInput.name != null and sysAclInput.name != ''">
+            and sa.name like concat(#{sysAclInput.name}, '%')
+        </if>
     </select>
 
 </mapper>

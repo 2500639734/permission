@@ -23,7 +23,7 @@ public class MybatisPlusGeneratorUtils {
     }
 
     public static void main(String[] args) {
-        generatorCode("sys_user", "sys_role", "sys_acl", "sys_user_role", "sys_role_acl");
+        generatorCode("sys_role_menu", "sys_menu");
     }
 
     /**

@@ -19,11 +19,20 @@ public class Result {
 
     private Object data;
 
-    private Integer total;
+    private Long total;
 
     public Result(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
+    }
+
+    /**
+     * 返回请求成功
+     * @param data
+     * @return
+     */
+    public static Result success (Object data, Long total) {
+        return build(ResultEnum.SUCCESS, data, total);
     }
 
     /**
@@ -80,14 +89,14 @@ public class Result {
     }
 
     /**
-     * 构建自定义返回结果,用于统一异常处理,见SpringExceptionResolver
-     * 业务异常建议使用ResultEnum构建
-     * @param code
-     * @param msg
+     * 构建指定返回结果
+     * @param resultEnum
+     * @param data
+     * @param total
      * @return
      */
-    public static Result build (Integer code, String msg) {
-        return new Result(code, msg);
+    public static Result build (ResultEnum resultEnum, Object data, Long total) {
+        return new Result(resultEnum.getCode(), resultEnum.getMsg(), data, total);
     }
 
 }

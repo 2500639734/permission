@@ -8,6 +8,7 @@ import java.lang.annotation.*;
  * @description: 权限注解
  *  声明在类上：该类的所有接口将被校验接口权限
  *  声明在接口方法上：该接口方法将被校验接口权限
+ *  不可重复声明
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
