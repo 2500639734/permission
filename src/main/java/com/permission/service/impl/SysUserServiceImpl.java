@@ -120,9 +120,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BusinessException(ResultEnum.ADD_USER_FAIL);
         }
 
-        // 维护用户角色关系
-        sysUserRoleService.addUserRoles(sysUser.getId(), sysUserInput.getRoleIdList());
-
         return SysUserInfo.toSysUserInfo(sysUser);
     }
 
@@ -141,19 +138,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser sysUser = selectUserById(sysUserInput.getId());
         ValidatedUtils.objectIsNuLL(sysUser, ResultEnum.USER_NOT_EXISTS);
 
-        // 修改了用户名校验修改的用户名是否存在
-        if (! sysUserInput.getUsername().equals(sysUser.getUsername())) {
-            SysUser selectSysUser = selectUserByUsername(sysUserInput.getUsername());
-            ValidatedUtils.objectIsNotNuLL(selectSysUser, ResultEnum.USERNAME_EXISTS);
-        }
-
-        // 重新加密密码
-        String newPassword = EncryptionUtils.getPassword(sysUserInput.getPassword(), sysUser.getPasswordSalt());
-
         // 更新用户
         sysUser.setName(sysUserInput.getName())
-                .setUsername(sysUserInput.getUsername())
-                .setPassword(newPassword)
                 .setUpdateTime(new Date())
                 .setUpdateUserId(sysUserInfo.getId())
                 .setUpdateUserName(sysUserInfo.getName());
@@ -162,9 +148,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (updateNumber <= 0) {
             throw new BusinessException(ResultEnum.UPDATE_USER_FAIL);
         }
-
-        // 维护用户角色关系
-        sysUserRoleService.addUserRoles(sysUser.getId(), sysUserInput.getRoleIdList());
 
         return SysUserInfo.toSysUserInfo(sysUser);
     }
@@ -206,13 +189,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (isUpdate) {
             ValidatedUtils.objectIsNuLL(sysUserInput.getId(), ResultEnum.PARAM_ERROR);
         }
+
+        // 用户姓名
         ValidatedUtils.strIsNull(sysUserInput.getName(), ResultEnum.NAME_IS_NULL);
         ValidatedUtils.strIsMatchRegex(sysUserInput.getName(), RegexEnum.NAME.getRegex(), ResultEnum.NAME__NOT_REGEX);
-        ValidatedUtils.strIsNull(sysUserInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
-        ValidatedUtils.strIsMatchRegex(sysUserInput.getUsername(), RegexEnum.USERNAME.getRegex(), ResultEnum.USERNAME_NOT_REGEX);
-        ValidatedUtils.strIsNull(sysUserInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
-        ValidatedUtils.strIsMatchRegex(sysUserInput.getUsername(), RegexEnum.PASSWORD.getRegex(), ResultEnum.PASSWORD_NOT_REGEX);
-        ValidatedUtils.collectionIsNull(sysUserInput.getRoleIdList(), ResultEnum.NO_SELECTD_ROLE);
+
+        // 用户名
+        if (! isUpdate) {
+            ValidatedUtils.strIsNull(sysUserInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
+            ValidatedUtils.strIsMatchRegex(sysUserInput.getUsername(), RegexEnum.USERNAME.getRegex(), ResultEnum.USERNAME_NOT_REGEX);
+        }
+
+        // 用户密码
+        if (! isUpdate) {
+            ValidatedUtils.strIsNull(sysUserInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
+            ValidatedUtils.strIsMatchRegex(sysUserInput.getPassword(), RegexEnum.PASSWORD.getRegex(), ResultEnum.PASSWORD_NOT_REGEX);
+        }
+
     }
 
     /**

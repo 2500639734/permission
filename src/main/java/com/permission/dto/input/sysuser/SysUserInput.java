@@ -4,7 +4,6 @@ import com.permission.dto.input.PageParam;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-
 import java.util.List;
 
 /**
@@ -46,5 +45,21 @@ public class SysUserInput extends PageParam {
      * 关联的角色id
      */
     private List<Integer> roleIdList;
+
+    /**
+     * 搜索条件：
+     * 用户名 | 用户姓名 | 用户编码
+     */
+    private String search;
+
+    /**
+     * 创建日期开始查询条件
+     */
+    private String createDateStart;
+
+    /**
+     * 创建日期结束查询条件
+     */
+    private String createDateEnd;
 
 }

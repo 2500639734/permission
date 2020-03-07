@@ -1,11 +1,11 @@
 package com.permission.aspect;
 
 import com.permission.annotation.NoPermission;
+import com.permission.annotation.RestFulPermission;
 import com.permission.dto.input.sysuser.CasUserInfo;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
 import com.permission.service.SysAclService;
-import com.permission.service.SysUserService;
 import com.permission.util.CookieUtils;
 import com.permission.util.SpringContextUtils;
 import org.aspectj.lang.JoinPoint;
@@ -25,9 +25,6 @@ import java.lang.reflect.Method;
 @Aspect
 @Component
 public class PermissionsAspect {
-
-    @Autowired
-    private SysUserService sysUserService;
 
     @Autowired
     private SysAclService sysAclService;
@@ -54,11 +51,18 @@ public class PermissionsAspect {
             return;
         }
 
+        // 当前方法标注了@RestFulPermission注解则有可能依据权限标识进行校验
+        String aclCode = null;
+        if (method.isAnnotationPresent(RestFulPermission.class)) {
+            RestFulPermission restFulPermission = method.getAnnotation(RestFulPermission.class);
+            aclCode = restFulPermission.aclCode();
+        }
+
         // 获取当前登录的用户信息
         CasUserInfo casUserInfo = CookieUtils.currentCasUserInfo(SpringContextUtils.getCurrentRequest());
 
         // 校验是否有请求URI接口的访问权限
-        if (! sysAclService.hasAcl(casUserInfo.getSysUserInfo().getId(), SpringContextUtils.getCurrentRequest())) {
+        if (! sysAclService.hasAcl(casUserInfo.getSysUserInfo().getId(), aclCode, SpringContextUtils.getCurrentRequest())) {
             throw new BusinessException(ResultEnum.NOT_PERMISSION);
         }
     }

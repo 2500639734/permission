@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.permission.annotation.CasUser;
 import com.permission.annotation.NoPermission;
 import com.permission.annotation.Permission;
+import com.permission.annotation.RestFulPermission;
 import com.permission.common.Result;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.input.sysuser.SysUserLoginInput;
@@ -28,12 +29,17 @@ import javax.servlet.http.HttpServletResponse;
  */
 @RestController
 @RequestMapping("/sys-user")
-// @Permission
+@Permission
 public class SysUserController {
 
     @Autowired
     private SysUserService sysUserService;
 
+    /**
+     * 分页查询用户列表
+     * @param sysUserInput
+     * @return
+     */
     @PostMapping("/selectSysUserList")
     public Result selectSysUserList (@RequestBody SysUserInput sysUserInput) {
         IPage<SysUser> sysUserIPage = sysUserService.selectSysUserList(sysUserInput);
@@ -67,6 +73,7 @@ public class SysUserController {
      * @param userId 用户id
      * @return
      */
+    @RestFulPermission(aclCode = "user:deleteUser")
     @PostMapping("/deleteUser/{userId}")
     public Result deleteUser (@PathVariable("userId") Integer userId) {
         return Result.success(sysUserService.deleteUser(userId));

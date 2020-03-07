@@ -3,6 +3,7 @@ package com.permission.extension;
 import com.permission.annotation.CasUser;
 import com.permission.dto.input.sysuser.CasUserInfo;
 import com.permission.dto.input.sysuser.SysUserInfo;
+import com.permission.util.CookieUtils;
 import com.permission.util.EncryptionUtils;
 import com.permission.util.RedisUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,16 +46,11 @@ public class CasUserAnnotationsArgumentResolver implements HandlerMethodArgument
         // 校验标注@CasUser注解的参数类型是否为SysUserInfo
         if (methodParameter.getParameterType().equals(SysUserInfo.class)) {
 
-            // HttpServletRequest的请求头中获取Redis中存放的用户登录Token的Key
+            // 获取当前登录用户信息注入到CasUser
             HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
-            String tokenKey = request.getHeader(EncryptionUtils.LOGIIN_TOKEN_KEY);
-            if (StringUtils.isEmpty(tokenKey)) {
-                return null;
-            }
+            CasUserInfo casUserInfo = CookieUtils.currentCasUserInfo(request);
 
-            // Redis中获取当前登录的用户信息返回注入到参数
-            CasUserInfo casUserInfo = (CasUserInfo) RedisUtils.get(tokenKey);
-            return casUserInfo.getSysUserInfo();
+            return casUserInfo == null ? null : casUserInfo.getSysUserInfo();
         }
         return null;
     }

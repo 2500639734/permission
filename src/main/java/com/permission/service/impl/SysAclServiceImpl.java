@@ -191,24 +191,31 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
 
     /**
      * 判断用户是否有访问接口权限
-     * @param userId
+     * @param userId 用户id
+     * @param aclCode 当前接口的权限标识
      * @param request
      * @return
      */
     @Override
-    public boolean hasAcl(Integer userId, HttpServletRequest request) {
+    public boolean hasAcl(Integer userId, String aclCode, HttpServletRequest request) {
         // 获取用户有权限访问的接口集合
         List<SysAcl> sysAclList = selectAclListByUserId(userId);
         if (CollectionUtil.isNotEmpty(sysAclList)) {
-            // 权限集合转KV，K：请求URI，V：请求方式
-            Map<String, Integer> syaAclMap = sysAclList.stream().collect(Collectors.toMap(SysAcl::getUrl, SysAcl::getType));
+
+            // 转换权限集合
+            Map<String, Integer> syaAclUriMap = sysAclList.stream().collect(Collectors.toMap(SysAcl::getUrl, SysAcl::getType));
+            Map<String, Integer> syaAclCodeMap = sysAclList.stream().collect(Collectors.toMap(SysAcl::getCode, SysAcl::getType));
 
             // 接口权限不足
-            if (! syaAclMap.containsKey(request.getRequestURI())) {
+            if (! syaAclUriMap.containsKey(request.getRequestURI()) && ! syaAclCodeMap.containsKey(aclCode)) {
                 return false;
             }
 
-            Integer type = syaAclMap.get(request.getRequestURI());
+            // 获取权限允许的请求方式
+            Integer type = syaAclUriMap.get(request.getRequestURI());
+            if (type == null) {
+                type = syaAclCodeMap.get(aclCode);
+            }
 
             // 请求方式不匹配
             if (! SysAclTypeEnum.ALL.getCode().equals(type)
@@ -216,6 +223,8 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
                 return false;
             }
 
+            // 权限验证通过
+            return true;
         }
 
         return false;

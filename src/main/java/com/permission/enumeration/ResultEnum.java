@@ -25,7 +25,7 @@ public enum ResultEnum {
      * 安全相关校验枚举
      */
     NOT_LOGIN (2001, "您还未登录,请先登录"),
-    NOT_PERMISSION (2002, "对不起,您没有访问权限"),
+    NOT_PERMISSION (2002, "对不起,您没有接口访问权限"),
 
     /**
      * 用户相关枚举

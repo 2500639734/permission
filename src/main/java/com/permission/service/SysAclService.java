@@ -59,11 +59,12 @@ public interface SysAclService extends IService<SysAcl> {
 
     /**
      * 判断用户是否有访问接口权限
-     * @param userId
+     * @param userId 用户id
+     * @param aclCode 当前接口的权限标识
      * @param request
      * @return
      */
-    boolean hasAcl (Integer userId, HttpServletRequest request);
+    boolean hasAcl (Integer userId, String aclCode, HttpServletRequest request);
 
     /**
      * 根据父级权限id查询父级权限
