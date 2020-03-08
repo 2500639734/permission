@@ -3,7 +3,10 @@ package com.permission.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.permission.annotation.CasUser;
+import com.permission.annotation.Permission;
+import com.permission.annotation.RestFulPermission;
 import com.permission.common.Result;
+import com.permission.dto.SysRoleDto;
 import com.permission.dto.input.sysrole.SysRoleInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.pojo.SysRole;
@@ -21,19 +24,19 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/sys-role")
-// @Permission
+@Permission
 public class SysRoleController {
 
     @Autowired
     private SysRoleService sysRoleService;
 
     /**
-     * 查询角色列表
+     * 分页查询角色列表
      * @return
      */
-    @PostMapping("/selectRoleList")
-    public Result selectRoleList (@RequestBody SysRoleInput sysRoleInput) {
-        IPage<SysRole> sysRoleIPage = sysRoleService.selectRoleList(sysRoleInput);
+    @PostMapping("/selectSysRoleList")
+    public Result selectSysRoleList (@RequestBody SysRoleInput sysRoleInput) {
+        IPage<SysRoleDto> sysRoleIPage = sysRoleService.selectSysRoleList(sysRoleInput);
         return Result.success(sysRoleIPage.getRecords(), sysRoleIPage.getTotal());
     }
 
@@ -64,8 +67,9 @@ public class SysRoleController {
      * @param roleId 角色id
      * @return
      */
+    @RestFulPermission(aclCode = "role:deleteRole")
     @PostMapping("/deleteRole/{roleId}")
-    public Result updateRole (@PathVariable("roleId") Integer roleId) {
+    public Result deleteRole (@PathVariable("roleId") Integer roleId) {
         return Result.success(sysRoleService.deleteRole(roleId));
     }
 

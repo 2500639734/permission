@@ -2,20 +2,25 @@ package com.permission.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.permission.dto.input.sysuser.SysUserInfo;
+import com.permission.dto.input.sysuser.UserAuthorizationInput;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
 import com.permission.pojo.SysRole;
+import com.permission.pojo.SysUser;
 import com.permission.pojo.SysUserRole;
 import com.permission.mapper.SysUserRoleMapper;
 import com.permission.service.SysRoleService;
 import com.permission.service.SysUserRoleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.permission.service.SysUserService;
 import com.permission.util.ValidatedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +37,9 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
 
     @Autowired
     private SysUserRoleMapper sysUserRoleMapper;
+
+    @Autowired
+    private SysUserService sysUserService;
 
     @Autowired
     private SysRoleService sysRoleService;
@@ -52,16 +60,23 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
 
     /**
      * 添加用户角色关系
-     * @param userId
-     * @param roleIdList
+     * @param sysUserInfo 当前登录用户信息
+     * @param userAuthorizationInput 用户授权角色入参
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public boolean addUserRoles(Integer userId, List<Integer> roleIdList) {
+    public boolean addUserRoles(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput) {
         // 校验参数
+        ValidatedUtils.objectIsNuLL(userAuthorizationInput, ResultEnum.PARAM_ERROR);
+        Integer userId = userAuthorizationInput.getUserId();
+        List<Integer> roleIdList = userAuthorizationInput.getAuthorizationRoleIdList();
         ValidatedUtils.objectIsNuLL(userId, ResultEnum.PARAM_ERROR);
         ValidatedUtils.collectionIsNull(roleIdList, ResultEnum.NO_SELECTD_ROLE);
+
+        // 校验用户是否存在
+        SysUser sysUser = sysUserService.selectUserById(userId);
+        ValidatedUtils.objectIsNuLL(sysUser, ResultEnum.USER_NOT_EXISTS);
 
         // 校验角色是否存在
         List<SysRole> existsRoleList = sysRoleService.selectRoleListByIds(roleIdList);
@@ -93,6 +108,12 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
             );
         });
 
+        // 更新用户操作人信息
+        sysUser.setUpdateTime(new Date())
+                .setUpdateUserId(sysUserInfo.getId())
+                .setUpdateUserName(sysUserInfo.getUsername());
+        sysUserService.updateById(sysUser);
+
         return saveBatch(sysUserRoleList);
     }
 
@@ -107,7 +128,7 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         // 校验参数
         ValidatedUtils.objectIsNuLL(userId, ResultEnum.PARAM_ERROR);
 
-        // 删除用户关联的角色关系
+        // 删除用户角色关系
         return sysUserRoleMapper.delete(
                 new QueryWrapper<SysUserRole>().eq("user_id", userId)
         );
@@ -124,7 +145,7 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         // 校验参数
         ValidatedUtils.objectIsNuLL(roleId, ResultEnum.PARAM_ERROR);
 
-        // 删除用户关联的角色关系
+        // 删除角色用户关系
         return sysUserRoleMapper.delete(
                 new QueryWrapper<SysUserRole>().eq("role_id", roleId)
         );

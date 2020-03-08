@@ -44,6 +44,7 @@ public enum ResultEnum {
     UPDATE_USER_FAIL (10010, "更新用户失败"),
     DELETE_USER_FAIL (10011, "删除用户失败"),
     USERNAME_EXISTS (10012, "用户名已存在"),
+    USER_AUTHORIZATION_FAIL (10013, "授权角色失败"),
 
     /**
      * 角色相关枚举
@@ -56,7 +57,7 @@ public enum ResultEnum {
     NO_SELECTD_ROLE (11007, "请选择对应角色"),
     ROLE_NAME_EXISTS (11008, "角色名称已存在"),
     DELETE_ROLE_FAIL (11009, "删除角色失败"),
-    ROLE_AUTHORIZATION_FAIL (11010, "角色授权失败"),
+    ROLE_AUTHORIZATION_FAIL (11010, "授权权限失败"),
 
     /**
      * 权限相关枚举

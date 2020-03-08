@@ -1,10 +1,7 @@
 package com.permission.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.permission.dto.input.sysuser.CasUserInfo;
-import com.permission.dto.input.sysuser.SysUserInfo;
-import com.permission.dto.input.sysuser.SysUserLoginInput;
-import com.permission.dto.input.sysuser.SysUserInput;
+import com.permission.dto.input.sysuser.*;
 import com.permission.pojo.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 

@@ -37,4 +37,25 @@ public class SysRoleInput extends PageParam {
      */
     private List<Integer> aclIds;
 
+    /**
+     * 搜索条件：
+     * 角色名 | 角色编码
+     */
+    private String search;
+
+    /**
+     * 创建日期开始查询条件
+     */
+    private String createDateStart;
+
+    /**
+     * 创建日期结束查询条件
+     */
+    private String createDateEnd;
+
+    /**
+     * 用户id，授权角色时默认选中时传入
+     */
+    private Integer userId;
+
 }

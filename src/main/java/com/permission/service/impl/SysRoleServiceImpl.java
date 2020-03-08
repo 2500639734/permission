@@ -1,11 +1,14 @@
 package com.permission.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.permission.dto.SysRoleDto;
 import com.permission.dto.input.sysrole.SysRoleInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
+import com.permission.enumeration.CheckedEnum;
 import com.permission.enumeration.RegexEnum;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -60,9 +64,24 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
      * @return
      */
     @Override
-    public IPage<SysRole> selectRoleList(SysRoleInput sysRoleInput) {
+    public IPage<SysRoleDto> selectSysRoleList(SysRoleInput sysRoleInput) {
         Page page = new Page(sysRoleInput.getPageStart(), sysRoleInput.getPageSize());
-        return sysRoleMapper.selectRoleList(page, sysRoleInput);
+        IPage<SysRoleDto> sysRoleIPage = sysRoleMapper.selectSysRoleList(page, sysRoleInput);
+
+        // 获取用户已拥有的角色列表,若用户已包含角色则默认选中
+        if (sysRoleInput != null && sysRoleInput.getUserId() != null) {
+            List<SysRole> sysUserRoleList = selectSysRoleListByUserId(sysRoleInput.getUserId());
+            List<Integer> sysUserRoleIdList = sysUserRoleList.stream().map(SysRole::getId).collect(Collectors.toList());
+            if (CollUtil.isNotEmpty(sysUserRoleIdList)) {
+                sysRoleIPage.getRecords().forEach(sysRoleDto -> {
+                    if (sysUserRoleIdList.contains(sysRoleDto.getId())) {
+                        sysRoleDto.setChecked(CheckedEnum.CHECKED.getCode());
+                    }
+                });
+            }
+        }
+
+        return sysRoleIPage;
     }
 
     /**
@@ -237,6 +256,15 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         sysRoleMapper.updateById(sysRole);
 
         return authorization;
+    }
+
+    @Override
+    public List<SysRole> selectSysRoleListByUserId(Integer userId) {
+        if (userId == null) {
+            return null;
+        }
+
+        return sysRoleMapper.selectSysRoleListByUserId(userId);
     }
 
 }

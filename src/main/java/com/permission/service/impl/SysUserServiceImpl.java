@@ -4,17 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.permission.dto.SysMenuTree;
-import com.permission.dto.input.sysuser.SysUserInfo;
-import com.permission.dto.input.sysuser.SysUserLoginInput;
-import com.permission.dto.input.sysuser.CasUserInfo;
-import com.permission.dto.input.sysuser.SysUserInput;
+import com.permission.dto.input.sysuser.*;
 import com.permission.enumeration.PrimaryCodeEnum;
 import com.permission.enumeration.RegexEnum;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
+import com.permission.pojo.SysRole;
 import com.permission.pojo.SysUser;
 import com.permission.mapper.SysUserMapper;
 import com.permission.service.SysMenuService;
+import com.permission.service.SysRoleService;
 import com.permission.service.SysUserRoleService;
 import com.permission.service.SysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -44,10 +43,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private SysUserMapper sysUserMapper;
 
     @Autowired
-    private SysMenuService sysMenuService;
+    private SysRoleService sysRoleService;
 
     @Autowired
     private SysUserRoleService sysUserRoleService;
+
+    @Autowired
+    private SysMenuService sysMenuService;
 
     @Override
     public IPage<SysUser> selectSysUserList(SysUserInput sysUserInput) {
@@ -234,10 +236,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BusinessException(ResultEnum.USERNAME_OR_PASSWORD_ERROR);
         }
 
-        // 设置用户拥有的菜单树形列表
+        // 获取用户拥有的角色列表
+        List<SysRole> sysRoleList = sysRoleService.selectSysRoleListByUserId(sysUser.getId());
+
+        // 获取用户拥有的菜单树形列表
         List<SysMenuTree> sysMenuTreeList = sysMenuService.selectMenuTreeByUserId(sysUser.getId());
+
+        // 设置用户信息
         CasUserInfo casUserInfo = new CasUserInfo()
                 .setSysUserInfo(SysUserInfo.toSysUserInfo(sysUser))
+                .setSysRoleList(sysRoleList)
                 .setSysMenuTreeList(sysMenuTreeList);
 
         // 保存token到cookie

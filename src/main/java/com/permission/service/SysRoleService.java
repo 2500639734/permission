@@ -1,6 +1,7 @@
 package com.permission.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.permission.dto.SysRoleDto;
 import com.permission.dto.input.sysrole.SysRoleInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.pojo.SysRole;
@@ -24,7 +25,7 @@ public interface SysRoleService extends IService<SysRole> {
      * @param sysRoleInput 查询角色列表入参
      * @return
      */
-    IPage<SysRole> selectRoleList (SysRoleInput sysRoleInput);
+    IPage<SysRoleDto> selectSysRoleList (SysRoleInput sysRoleInput);
 
     /**
      * 角色ids查询角色列表
@@ -70,5 +71,12 @@ public interface SysRoleService extends IService<SysRole> {
      * @return
      */
     boolean roleAuthorization (SysUserInfo sysUserInfo, SysRoleInput sysRoleInput);
+
+    /**
+     * 查询用户包含的角色列表
+     * @param userId 用户id
+     * @return
+     */
+    List<SysRole> selectSysRoleListByUserId (Integer userId);
 
 }

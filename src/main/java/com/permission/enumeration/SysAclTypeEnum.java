@@ -14,9 +14,9 @@ public enum SysAclTypeEnum {
 
     GET (10),
     POST (20),
-    PUT(30),
-    DELETE(40),
-    ALL(50);
+    PUT (30),
+    DELETE (40),
+    ALL (50);
 
     /**
      * 唯一标识

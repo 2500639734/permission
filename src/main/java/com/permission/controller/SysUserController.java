@@ -10,7 +10,9 @@ import com.permission.common.Result;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.input.sysuser.SysUserLoginInput;
 import com.permission.dto.input.sysuser.SysUserInput;
+import com.permission.dto.input.sysuser.UserAuthorizationInput;
 import com.permission.pojo.SysUser;
+import com.permission.service.SysUserRoleService;
 import com.permission.service.SysUserService;
 import com.permission.util.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,9 @@ public class SysUserController {
 
     @Autowired
     private SysUserService sysUserService;
+
+    @Autowired
+    private SysUserRoleService sysUserRoleService;
 
     /**
      * 分页查询用户列表
@@ -110,6 +115,17 @@ public class SysUserController {
     @PostMapping("/getCurrentCasUserInfo")
     public Result getCurrentCasUserInfo(HttpServletRequest request) {
         return Result.success(CookieUtils.currentCasUserInfo(request));
+    }
+
+    /**
+     * 用户授权角色
+     * @param sysUserInfo 当前登录的用户信息
+     * @param userAuthorizationInput 用户授权角色入参
+     * @return
+     */
+    @PostMapping("/authorizationRole")
+    public Result authorizationRole(@CasUser SysUserInfo sysUserInfo, @RequestBody UserAuthorizationInput userAuthorizationInput) {
+        return Result.success(sysUserRoleService.addUserRoles(sysUserInfo, userAuthorizationInput));
     }
 
 }

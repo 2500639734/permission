@@ -21,7 +21,7 @@
     </sql>
 
     <!-- 用户id查询角色列表 -->
-    <select id="selectRoleListByUserId" resultType="com.permission.pojo.SysRole">
+    <select id="selectSysRoleListByUserId" resultType="com.permission.pojo.SysRole">
         select
             distinct sr.*
         from sys_role as sr
@@ -30,18 +30,21 @@
     </select>
 
     <!-- 分页查询角色列表 -->
-    <select id="selectRoleList" resultType="com.permission.pojo.SysRole">
+    <select id="selectSysRoleList" resultType="com.permission.dto.SysRoleDto">
         select
         <include refid="Base_Column_List"/>
         from sys_role as sr
-        <trim prefix="where (" suffix=")" prefixOverrides="or">
-            <if test="selectRoleInput.name != null and selectRoleInput.name != ''">
-                or sr.name like concat(#{selectRoleInput.name}, '%')
-            </if>
-            <if test="selectRoleInput.code != null and selectRoleInput.code != ''">
-                or sr.code like concat(#{selectRoleInput.code}, '%')
-            </if>
-        </trim>
+        where 1 = 1
+        <if test="sysRoleInput.search != null and sysRoleInput.search != ''">
+            and (
+                sr.name like concat(#{sysRoleInput.search}, '%')
+                or sr.code like concat(#{sysRoleInput.search}, '%')
+            )
+        </if>
+        <if test="sysRoleInput.createDateStart != null and sysRoleInput.createDateStart != ''
+                and sysRoleInput.createDateEnd != null and sysRoleInput.createDateEnd != ''" >
+            and date_format(sr.create_time, '%Y-%m-%d') between #{sysRoleInput.createDateStart} and #{sysRoleInput.createDateEnd}
+        </if>
     </select>
 
 </mapper>

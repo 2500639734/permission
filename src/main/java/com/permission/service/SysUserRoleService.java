@@ -1,5 +1,7 @@
 package com.permission.service;
 
+import com.permission.dto.input.sysuser.SysUserInfo;
+import com.permission.dto.input.sysuser.UserAuthorizationInput;
 import com.permission.pojo.SysUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -24,11 +26,11 @@ public interface SysUserRoleService extends IService<SysUserRole> {
 
     /**
      * 添加用户角色关系
-     * @param userId
-     * @param roleIdList
+     * @param sysUserInfo 当前登录用户信息
+     * @param userAuthorizationInput 用户授权角色入参
      * @return
      */
-    boolean addUserRoles(Integer userId, List<Integer> roleIdList);
+    boolean addUserRoles(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput);
 
     /**
      * 删除用户关联的角色
