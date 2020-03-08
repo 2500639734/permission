@@ -4,7 +4,6 @@ import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.input.sysuser.UserAuthorizationInput;
 import com.permission.pojo.SysUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
-
 import java.util.List;
 
 /**
@@ -31,6 +30,14 @@ public interface SysUserRoleService extends IService<SysUserRole> {
      * @return
      */
     boolean addUserRoles(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput);
+
+    /**
+     * 删除用户角色关系
+     * @param sysUserInfo 当前登录用户信息
+     * @param userAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    boolean deleteUserRoles(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput);
 
     /**
      * 删除用户关联的角色

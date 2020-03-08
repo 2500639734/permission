@@ -1,7 +1,9 @@
 package com.permission.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.permission.common.DoubleResult;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.input.sysuser.UserAuthorizationInput;
 import com.permission.enumeration.ResultEnum;
@@ -68,6 +70,44 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
     @Override
     public boolean addUserRoles(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput) {
         // 校验参数
+        SysUser sysUser = validAuthorizationParam(userAuthorizationInput);
+
+        // 过滤原本已存在的用户角色关系
+        List<Integer> roleIdList = userAuthorizationInput.getAuthorizationRoleIdList();
+        List<Integer> oldRoleIds = selectSysUserRoleByUserId(userAuthorizationInput.getUserId()).stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+        roleIdList = roleIdList.stream().filter(sysRole -> ! oldRoleIds.contains(sysRole)).collect(Collectors.toList());
+
+        // 授权的角色原本已有权限则不重复添加
+        if (CollectionUtil.isEmpty(roleIdList)) {
+            return true;
+        }
+
+        // 更新用户操作人信息
+        sysUser.setUpdateTime(new Date())
+                .setUpdateUserId(sysUserInfo.getId())
+                .setUpdateUserName(sysUserInfo.getName());
+        sysUserService.updateById(sysUser);
+
+        // 保存用户角色关系
+        List<SysUserRole> sysUserRoleList = new ArrayList<>();
+        roleIdList.forEach(roleId -> {
+            sysUserRoleList.add(
+                    new SysUserRole()
+                            .setUserId(userAuthorizationInput.getUserId())
+                            .setRoleId(roleId)
+            );
+        });
+
+        return saveBatch(sysUserRoleList);
+    }
+
+    /**
+     * 授权用户角色/取消授权 校验参数
+     * @param userAuthorizationInput 授权 / 取消授权入参
+     * @return 用户信息
+     */
+    private SysUser validAuthorizationParam (UserAuthorizationInput userAuthorizationInput) {
+        // 校验参数
         ValidatedUtils.objectIsNuLL(userAuthorizationInput, ResultEnum.PARAM_ERROR);
         Integer userId = userAuthorizationInput.getUserId();
         List<Integer> roleIdList = userAuthorizationInput.getAuthorizationRoleIdList();
@@ -79,42 +119,35 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         ValidatedUtils.objectIsNuLL(sysUser, ResultEnum.USER_NOT_EXISTS);
 
         // 校验角色是否存在
-        List<SysRole> existsRoleList = sysRoleService.selectRoleListByIds(roleIdList);
-        ValidatedUtils.collectionIsNull(existsRoleList, ResultEnum.ROLE_NOT_EXISTS);
-        List<Integer> existsRoleIdList = existsRoleList.stream().map(SysRole::getId).collect(Collectors.toList());
-        if (! existsRoleIdList.containsAll(roleIdList)) {
+        List<SysRole> roleList = sysRoleService.selectRoleListByIds(roleIdList);
+        if (CollUtil.isEmpty(roleList)) {
             throw new BusinessException(ResultEnum.ROLE_NOT_EXISTS);
         }
 
-        // 过滤已存在的用户角色关系
-        List<SysUserRole> existsSysUserRoleList = selectSysUserRoleByUserId(userId);
-        if (CollectionUtil.isNotEmpty(existsSysUserRoleList)) {
-            List<Integer> existsUserRoleIdList = existsSysUserRoleList.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
-            roleIdList.removeAll(existsUserRoleIdList);
-        }
+        return sysUser;
+    }
 
-        // 若关联的角色全部存在关联关系则不重复添加
-        if (CollectionUtil.isEmpty(roleIdList)) {
-            return true;
-        }
-
-        // 保存用户角色关系
-        List<SysUserRole> sysUserRoleList = new ArrayList<>();
-        roleIdList.forEach(roleId -> {
-            sysUserRoleList.add(
-                    new SysUserRole()
-                            .setUserId(userId)
-                            .setRoleId(roleId)
-            );
-        });
+    /**
+     * 删除用户角色关系
+     * @param sysUserInfo 当前登录用户信息
+     * @param userAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    @Override
+    public boolean deleteUserRoles(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput) {
+        // 校验参数
+        SysUser sysUser = validAuthorizationParam(userAuthorizationInput);
 
         // 更新用户操作人信息
         sysUser.setUpdateTime(new Date())
                 .setUpdateUserId(sysUserInfo.getId())
-                .setUpdateUserName(sysUserInfo.getUsername());
+                .setUpdateUserName(sysUserInfo.getName());
         sysUserService.updateById(sysUser);
 
-        return saveBatch(sysUserRoleList);
+        // 删除用户角色关系
+        return sysUserRoleMapper.delete(
+                new QueryWrapper<SysUserRole>().in("role_id", userAuthorizationInput.getAuthorizationRoleIdList())
+        ) > 0;
     }
 
     /**

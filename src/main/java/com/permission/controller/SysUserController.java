@@ -7,10 +7,7 @@ import com.permission.annotation.NoPermission;
 import com.permission.annotation.Permission;
 import com.permission.annotation.RestFulPermission;
 import com.permission.common.Result;
-import com.permission.dto.input.sysuser.SysUserInfo;
-import com.permission.dto.input.sysuser.SysUserLoginInput;
-import com.permission.dto.input.sysuser.SysUserInput;
-import com.permission.dto.input.sysuser.UserAuthorizationInput;
+import com.permission.dto.input.sysuser.*;
 import com.permission.pojo.SysUser;
 import com.permission.service.SysUserRoleService;
 import com.permission.service.SysUserService;
@@ -126,6 +123,17 @@ public class SysUserController {
     @PostMapping("/authorizationRole")
     public Result authorizationRole(@CasUser SysUserInfo sysUserInfo, @RequestBody UserAuthorizationInput userAuthorizationInput) {
         return Result.success(sysUserRoleService.addUserRoles(sysUserInfo, userAuthorizationInput));
+    }
+
+    /**
+     * 取消用户授权的角色
+     * @param sysUserInfo 当前登录的用户信息
+     * @param userAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    @PostMapping("/cancelAuthorizationRole")
+    public Result cancelAuthorizationRole(@CasUser SysUserInfo sysUserInfo, @RequestBody UserAuthorizationInput userAuthorizationInput) {
+        return Result.success(sysUserRoleService.deleteUserRoles(sysUserInfo, userAuthorizationInput));
     }
 
 }

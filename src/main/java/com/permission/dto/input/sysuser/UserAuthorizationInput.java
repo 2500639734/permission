@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @auther: shenke
  * @date: 2020/3/8 17:57
- * @description: 用户授权角色入参
+ * @description: 用户授权角色/取消授权入参
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
