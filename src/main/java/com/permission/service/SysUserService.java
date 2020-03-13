@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.permission.dto.input.sysuser.*;
 import com.permission.pojo.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,21 +22,21 @@ public interface SysUserService extends IService<SysUser> {
      * @param sysUserInput
      * @return
      */
-    IPage<SysUser> selectSysUserList (SysUserInput sysUserInput);
+    IPage<SysUser> selectSysUserList(SysUserInput sysUserInput);
 
     /**
      * 根据id查询用户
      * @param id
      * @return
      */
-    SysUser selectUserById (Integer id);
+    SysUser selectUserById(Integer id);
 
     /**
      * 根据用户名查询用户
      * @param username 用户名
      * @return
      */
-    SysUser selectUserByUsername (String username);
+    SysUser selectUserByUsername(String username);
 
     /**
      * 添加用户
@@ -45,7 +44,7 @@ public interface SysUserService extends IService<SysUser> {
      * @param sysUserInput 添加用户入参
      * @return
      */
-    SysUserInfo addUser (SysUserInfo sysUserInfo,SysUserInput sysUserInput);
+    SysUserInfo addUser(SysUserInfo sysUserInfo,SysUserInput sysUserInput);
 
     /**
      * 更新用户
@@ -53,14 +52,14 @@ public interface SysUserService extends IService<SysUser> {
      * @param sysUserInput 修改用户入参
      * @return
      */
-    SysUserInfo updateUser (SysUserInfo sysUserInfo, SysUserInput sysUserInput);
+    SysUserInfo updateUser(SysUserInfo sysUserInfo, SysUserInput sysUserInput);
 
     /**
      * 删除用户
      * @param userId 用户id
      * @return
      */
-    Integer deleteUser (Integer userId);
+    Integer deleteUser(Integer userId);
 
     /**
      * 用户登录
@@ -68,12 +67,28 @@ public interface SysUserService extends IService<SysUser> {
      * @param userLoginInput 用户登录入参
      * @return
      */
-    String login (HttpServletResponse response, SysUserLoginInput userLoginInput);
+    String login(HttpServletResponse response, SysUserLoginInput userLoginInput);
 
     /**
      * 用户退出登录
      * @param request
      */
-    void logout (HttpServletRequest request);
+    void logout(HttpServletRequest request);
+
+    /**
+     * 用户授权角色
+     * @param sysUserInfo 当前登录的用户信息
+     * @param userAuthorizationInput 用户授权角色入参
+     * @return
+     */
+    boolean authorizationRole(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput);
+
+    /**
+     * 取消用户授权的角色
+     * @param sysUserInfo 当前登录的用户信息
+     * @param userAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    boolean cancelAuthorizationRole(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput);
 
 }

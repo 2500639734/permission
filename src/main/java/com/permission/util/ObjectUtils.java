@@ -12,9 +12,9 @@ import java.util.regex.Pattern;
  * @date: 2019/10/31 20:17
  * @description: 验证工具类
  */
-public class ValidatedUtils {
+public class ObjectUtils {
 
-    private ValidatedUtils () {
+    private ObjectUtils() {
 
     }
 
@@ -23,9 +23,22 @@ public class ValidatedUtils {
      * @param obj
      * @param resultEnum
      */
-    public static void objectIsNuLL (Object obj, ResultEnum resultEnum) {
+    public static void isNull (Object obj, ResultEnum resultEnum) {
         if (obj == null) {
             throw new BusinessException(resultEnum);
+        }
+    }
+
+    /**
+     * 校验多个对象是否为空
+     * @param resultEnum
+     * @param objs
+     */
+    public static void isNull (ResultEnum resultEnum, Object ... objs) {
+        for (Object obj : objs) {
+            if (obj == null) {
+                throw new BusinessException(resultEnum);
+            }
         }
     }
 
@@ -34,7 +47,7 @@ public class ValidatedUtils {
      * @param obj
      * @param resultEnum
      */
-    public static void objectIsNotNuLL (Object obj, ResultEnum resultEnum) {
+    public static void isNotNull (Object obj, ResultEnum resultEnum) {
         if (obj != null) {
             throw new BusinessException(resultEnum);
         }
@@ -45,7 +58,7 @@ public class ValidatedUtils {
      * @param strs
      * @param resultEnum
      */
-    public static void strIsNull (String strs, ResultEnum resultEnum) {
+    public static void strisNull (String strs, ResultEnum resultEnum) {
         if (StringUtils.isEmpty(strs)) {
             throw new BusinessException(resultEnum);
         }
@@ -125,7 +138,7 @@ public class ValidatedUtils {
      * @param resultEnum
      */
     public static void isTrue (Boolean flag, ResultEnum resultEnum) {
-        if (flag == null || ! flag) {
+        if (flag == null || flag == true) {
             throw new BusinessException(resultEnum);
         }
     }
@@ -136,7 +149,7 @@ public class ValidatedUtils {
      * @param resultEnum
      */
     public static void isFalse (Boolean flag, ResultEnum resultEnum) {
-        if (flag == null || flag) {
+        if (flag == null || flag == false) {
             throw new BusinessException(resultEnum);
         }
     }

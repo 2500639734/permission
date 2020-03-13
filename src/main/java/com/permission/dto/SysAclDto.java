@@ -1,6 +1,6 @@
 package com.permission.dto;
 
-import com.permission.enumeration.SysAclTypeEnum;
+import com.permission.enumeration.RequestTypeEnum;
 import com.permission.pojo.SysAcl;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,7 +34,7 @@ public class SysAclDto extends SysAcl implements Serializable {
     public static SysAclDto toSysAclOutPut (SysAcl sysAcl) {
         SysAclDto sysAclOutput = new SysAclDto();
         BeanUtils.copyProperties(sysAcl, sysAclOutput);
-        sysAclOutput.setTypeMethod(SysAclTypeEnum.getNameByCode(sysAcl.getType()));
+        sysAclOutput.setTypeMethod(RequestTypeEnum.getNameByCode(sysAcl.getType()));
         return sysAclOutput;
     }
 

@@ -6,7 +6,7 @@ import com.permission.pojo.SysRoleAcl;
 import com.permission.mapper.SysRoleAclMapper;
 import com.permission.service.SysRoleAclService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.permission.util.ValidatedUtils;
+import com.permission.util.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +34,7 @@ public class SysRoleAclServiceImpl extends ServiceImpl<SysRoleAclMapper, SysRole
     @Override
     public int deleteRoleAcls(Integer roleId) {
         // 参数校验
-        ValidatedUtils.objectIsNuLL(roleId, ResultEnum.PARAM_ERROR);
+        ObjectUtils.isNull(roleId, ResultEnum.PARAM_ERROR);
 
         // 删除角色关联的权限
         return sysRoleAclMapper.delete(new QueryWrapper<SysRoleAcl>().eq("role_id", roleId));

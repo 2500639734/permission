@@ -2,6 +2,7 @@ package com.permission.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.permission.dto.SysRoleDto;
+import com.permission.dto.input.sysrole.RoleAuthorizationInput;
 import com.permission.dto.input.sysrole.SysRoleInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.pojo.SysRole;
@@ -25,21 +26,35 @@ public interface SysRoleService extends IService<SysRole> {
      * @param sysRoleInput 查询角色列表入参
      * @return
      */
-    IPage<SysRoleDto> selectSysRoleList (SysRoleInput sysRoleInput);
+    IPage<SysRoleDto> selectSysRoleList(SysRoleInput sysRoleInput);
+
+    /**
+     * 角色id查询角色
+     * @param id 角色id
+     * @return
+     */
+    SysRole selectRoleById(Integer id);
 
     /**
      * 角色ids查询角色列表
      * @param ids
      * @return
      */
-    List<SysRole> selectRoleListByIds (Collection<Integer> ids);
+    List<SysRole> selectRoleListByIds(Collection<Integer> ids);
 
     /**
      * 根据角色编码查询角色
      * @param code
      * @return
      */
-    SysRole selectRoleByCode (String code);
+    SysRole selectRoleByCode(String code);
+
+    /**
+     * 查询用户包含的角色列表
+     * @param userId 用户id
+     * @return
+     */
+    List<SysRole> selectSysRoleListByUserId(Integer userId);
 
     /**
      * 添加角色
@@ -62,21 +77,14 @@ public interface SysRoleService extends IService<SysRole> {
      * @param roleId 角色id
      * @return
      */
-    int deleteRole (Integer roleId);
+    int deleteRole(Integer roleId);
 
     /**
-     * 角色授权
+     * 角色授权 / 取消授权菜单
      * @param sysUserInfo 当前登录用户信息
-     * @param sysRoleInput 角色授权入参
+     * @param roleAuthorizationInput 角色授权 / 取消授权入参
      * @return
      */
-    boolean roleAuthorization (SysUserInfo sysUserInfo, SysRoleInput sysRoleInput);
-
-    /**
-     * 查询用户包含的角色列表
-     * @param userId 用户id
-     * @return
-     */
-    List<SysRole> selectSysRoleListByUserId (Integer userId);
+    boolean authorizationMenu(SysUserInfo sysUserInfo, RoleAuthorizationInput roleAuthorizationInput);
 
 }

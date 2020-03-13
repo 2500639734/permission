@@ -1,9 +1,11 @@
 package com.permission.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import com.permission.common.Result;
+import com.permission.enumeration.ResultEnum;
+import com.permission.service.SysMenuService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -16,5 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/sys-menu")
 public class SysMenuController {
+
+    @Autowired
+    private SysMenuService sysMenuService;
+
+    @PostMapping("/selectMenuList/{roleId}")
+    public Result selectAclList (@PathVariable("roleId") Integer roleId) {
+        return Result.build(ResultEnum.SUCCESS, sysMenuService.selectMenuTreeByRoleId(roleId));
+    }
 
 }

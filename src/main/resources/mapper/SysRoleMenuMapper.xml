@@ -14,4 +14,10 @@
         id, role_id, menu_id
     </sql>
 
+    <!-- 删除角色对应的菜单 -->
+    <delete id="deleteMenuByRoleId">
+        delete from sys_role_menu
+        where role_id = #{roleId}
+    </delete>
+
 </mapper>

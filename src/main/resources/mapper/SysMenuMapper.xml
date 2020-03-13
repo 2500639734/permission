@@ -32,7 +32,16 @@
         left join sys_role as sr on sr.id = srm.role_id
         left join sys_user_role as sur on sur.role_id = sr.id
         left join sys_user as su on su.id = sur.user_id
-        where su.id = #{userId}
+        where sm.type = 10 and su.id = #{userId}
+    </select>
+
+    <!-- 获取角色包含的菜单列表 -->
+    <select id="selectMenuListByRoleId" resultMap="BaseResultMap">
+        select
+        distinct sm.*
+        from sys_menu as sm
+        left join sys_role_menu as srm on srm.menu_id = sm.id
+        where srm.role_id = #{roleId}
     </select>
 
 </mapper>

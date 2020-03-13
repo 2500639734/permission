@@ -7,9 +7,11 @@ import com.permission.annotation.Permission;
 import com.permission.annotation.RestFulPermission;
 import com.permission.common.Result;
 import com.permission.dto.SysRoleDto;
+import com.permission.dto.input.sysrole.RoleAuthorizationInput;
 import com.permission.dto.input.sysrole.SysRoleInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.pojo.SysRole;
+import com.permission.service.SysRoleMenuService;
 import com.permission.service.SysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -74,14 +76,14 @@ public class SysRoleController {
     }
 
     /**
-     * 角色授权
+     * 角色授权 / 取消授权菜单
      * @param sysUserInfo 当前登录用户信息
-     * @param sysRoleInput 角色授权入参
+     * @param roleAuthorizationInput 角色授权 / 取消授权入参
      * @return
      */
-    @PostMapping("/roleAuthorization")
-    public Result roleAuthorization (@CasUser SysUserInfo sysUserInfo, @RequestBody SysRoleInput sysRoleInput) {
-        return Result.success(sysRoleService.roleAuthorization(sysUserInfo, sysRoleInput));
+    @PostMapping("/authorizationMenu")
+    public Result authorizationMenu (@CasUser SysUserInfo sysUserInfo, @RequestBody RoleAuthorizationInput roleAuthorizationInput) {
+        return Result.success(sysRoleService.authorizationMenu(sysUserInfo, roleAuthorizationInput));
     }
 
 }

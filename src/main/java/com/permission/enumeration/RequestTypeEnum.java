@@ -6,11 +6,11 @@ import lombok.Getter;
 /**
  * @auther: shenke
  * @date: 2020/2/25 19:52
- * @description: 权限类型枚举
+ * @description: 请求方式类型枚举
  */
 @AllArgsConstructor
 @Getter
-public enum SysAclTypeEnum {
+public enum RequestTypeEnum {
 
     GET (10),
     POST (20),
@@ -33,7 +33,7 @@ public enum SysAclTypeEnum {
             return null;
         }
 
-        for (SysAclTypeEnum sysAclTypeEnum : SysAclTypeEnum.values()) {
+        for (RequestTypeEnum sysAclTypeEnum : RequestTypeEnum.values()) {
             if (sysAclTypeEnum.code == code) {
                 return sysAclTypeEnum.name();
             }

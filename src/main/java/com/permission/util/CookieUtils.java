@@ -27,7 +27,7 @@ public class CookieUtils {
      */
     public static String getLoginToken (HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        if (ValidatedUtils.isNotEmpty(cookies)) {
+        if (ObjectUtils.isNotEmpty(cookies)) {
             for (Cookie cookie : request.getCookies()) {
                 if (EncryptionUtils.LOGIIN_TOKEN_KEY.equals(cookie.getName())) {
                     return cookie.getValue();
