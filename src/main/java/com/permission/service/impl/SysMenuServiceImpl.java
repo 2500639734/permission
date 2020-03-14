@@ -2,9 +2,13 @@ package com.permission.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.permission.dto.SysMenuDto;
 import com.permission.dto.SysMenuTree;
+import com.permission.dto.input.sysmenu.SysMenuInput;
 import com.permission.enumeration.CheckedEnum;
+import com.permission.enumeration.MenuTypeEnum;
 import com.permission.pojo.SysMenu;
 import com.permission.mapper.SysMenuMapper;
 import com.permission.service.SysMenuService;
@@ -31,12 +35,42 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     private SysMenuMapper sysMenuMapper;
 
     /**
+     * 分页查询菜单列表
+     * @param sysMenuInput 查询树形菜单列表入参
+     * @return
+     */
+    @Override
+    public IPage<SysMenuTree> selectSysMenuTreeList(SysMenuInput sysMenuInput) {
+        // 分页查询根菜单集合
+        Page<SysMenu> page = new Page<>(sysMenuInput.getPageStart(), sysMenuInput.getPageSize());
+        IPage<SysMenu> sysMenuIPage = sysMenuMapper.selectSysMenuList(page, sysMenuInput.setRoot(true));
+        List<SysMenuTree> rootSysMenuTreeList = SysMenuTree.toSysMenuTree(sysMenuIPage.getRecords())
+                .stream()
+                .map(sysMenuTree -> sysMenuTree.setTypeDesc(MenuTypeEnum.getDescByCode(sysMenuTree.getType())))
+                .collect(Collectors.toList());
+
+        // 查询所有菜单集合
+        List<SysMenuTree> sysMenuTreeList = SysMenuTree.toSysMenuTree(selectSysMenuList());
+        sysMenuTreeList
+                .stream()
+                .map(sysMenuTree -> sysMenuTree.setTypeDesc(MenuTypeEnum.getDescByCode(sysMenuTree.getType())))
+                .collect(Collectors.toList());
+
+        // 菜单集合转树形类型集合
+        IPage<SysMenuTree> sysMenuTreePage = new Page<>();
+        sysMenuTreePage.setTotal(sysMenuIPage.getTotal());
+        sysMenuTreePage.setRecords(SysMenuTree.buildSysMenuTree(sysMenuTreeList, rootSysMenuTreeList));
+
+        return sysMenuTreePage;
+    }
+
+    /**
      * 获取所有的菜单列表
      * @return
      */
     @Override
-    public List<SysMenu> selectMenuList() {
-        return sysMenuMapper.selectList(new QueryWrapper<>());
+    public List<SysMenu> selectSysMenuList() {
+        return sysMenuMapper.selectList(new QueryWrapper<SysMenu>().orderByAsc("sort"));
     }
 
     /**
@@ -82,11 +116,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         List<SysMenu> sysMenuList = selectMenuListByUserId(userId);
         // 菜单集合转树形类型集合
         List<SysMenuTree> sysMenuTreeList = SysMenuTree.toSysMenuTree(sysMenuList);
-        // 获取所有的一级菜单集合
-        List<SysMenuTree> rootMenuTreeList = SysMenuTree.getRootMenuTreeList(sysMenuTreeList);
 
         // 构建菜单树返回
-        return SysMenuTree.buildSysMenuTree(sysMenuTreeList, rootMenuTreeList);
+        return SysMenuTree.buildSysMenuTree(sysMenuTreeList);
     }
 
     /**
@@ -117,10 +149,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         // 获取角色拥有的菜单id集合
         List<Integer> roleMenuIdList = selectMenuListByRoleId(roleId).stream().map(SysMenu::getId).collect(Collectors.toList());
         // 获取所有的菜单列表
-        List<SysMenuDto> sysMenuDtoList = SysMenuDto.toSysMenuDto(selectMenuList()).stream().map(sysMenuDto -> {
+        List<SysMenuDto> sysMenuDtoList = SysMenuDto.toSysMenuDto(selectSysMenuList()).stream().map(sysMenuDto -> {
             // 角色已拥有的菜单默认选中
             if (roleMenuIdList.contains(sysMenuDto.getId())) {
                 sysMenuDto.setChecked(CheckedEnum.CHECKED.getCode());
+            } else {
+                sysMenuDto.setChecked(CheckedEnum.NO_CHECKED.getCode());
             }
             return sysMenuDto;
         }).collect(Collectors.toList());

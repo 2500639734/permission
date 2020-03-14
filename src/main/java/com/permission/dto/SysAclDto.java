@@ -1,6 +1,5 @@
 package com.permission.dto;
 
-import com.permission.enumeration.CheckedEnum;
 import com.permission.pojo.SysAcl;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,8 +25,8 @@ public class SysAclDto extends SysAcl implements Serializable {
     private String methodTypeName;
 
     /**
-     * 是否选中：10-选中，20-未选中，默认未选中
+     * 是否选中：10-选中，20-未选中
      */
-    private Integer checked = CheckedEnum.NO_CHECKED.getCode();
+    private Integer checked;
 
 }

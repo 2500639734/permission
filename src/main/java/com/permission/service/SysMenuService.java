@@ -1,6 +1,8 @@
 package com.permission.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.permission.dto.SysMenuTree;
+import com.permission.dto.input.sysmenu.SysMenuInput;
 import com.permission.pojo.SysMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,10 +20,17 @@ import java.util.List;
 public interface SysMenuService extends IService<SysMenu> {
 
     /**
+     * 分页查询树形菜单列表
+     * @param sysMenuInput 查询树形菜单列表入参
+     * @return
+     */
+    IPage<SysMenuTree> selectSysMenuTreeList(SysMenuInput sysMenuInput);
+
+    /**
      * 获取所有的菜单列表
      * @return
      */
-    List<SysMenu> selectMenuList ();
+    List<SysMenu> selectSysMenuList ();
 
     /**
      * 菜单ids查询菜单列表

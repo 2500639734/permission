@@ -1,7 +1,6 @@
 package com.permission.dto;
 
 import com.permission.constant.SysConstant;
-import com.permission.enumeration.CheckedEnum;
 import com.permission.pojo.SysMenu;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,9 +27,19 @@ public class SysMenuTree extends SysMenu implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 菜单类型描述
+     */
+    private String typeDesc;
+
+    /**
      * 是否选中: 10-选中，20-未选中
      */
-    private Integer checked = CheckedEnum.NO_CHECKED.getCode();
+    private Integer checked;
+
+    /**
+     * elementui -> 是否拥有子节点：true-是，false-否
+     */
+    private Boolean hasChildren;
 
     /**
      * 子菜单列表
@@ -115,7 +124,8 @@ public class SysMenuTree extends SysMenu implements Serializable {
      */
     public static List<SysMenuTree> buildSysMenuTree(List<SysMenuTree> sysMenuTreeList) {
         Map<Integer, SysMenuTree> sysMenuTreeMap = sysMenuTreeList.stream().collect(Collectors.toMap(SysMenuTree::getId, Function.identity(), (k1, k2) -> k2));
-        sysMenuTreeList.stream().filter(sysMenuTree -> ! SysConstant.ROOT_ID.equals(sysMenuTree.getPId()))
+        sysMenuTreeList.stream()
+                .filter(sysMenuTree -> ! SysConstant.ROOT_ID.equals(sysMenuTree.getPId()))
                 .forEach(sysMenuTree -> sysMenuTreeMap.get(sysMenuTree.getPId()).getChildMenuTreeList().add(sysMenuTree));
         return sysMenuTreeList.stream().filter(sysMenuTree -> SysConstant.ROOT_ID.equals(sysMenuTree.getPId())).collect(Collectors.toList());
     }

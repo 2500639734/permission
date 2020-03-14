@@ -3,6 +3,7 @@ package com.permission.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.permission.dto.input.sysrole.RoleAuthorizationInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.enumeration.ResultEnum;
@@ -149,6 +150,21 @@ public class SysRoleAclServiceImpl extends ServiceImpl<SysRoleAclMapper, SysRole
         }
 
         return sysRole;
+    }
+
+    /**
+     * 删除角色对应的角色权限关联关系
+     * @param roleId 角色id
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int deleteRoleAclByRoleId(Integer roleId) {
+        if (roleId == null) {
+            return 0;
+        }
+
+        return sysRoleAclMapper.delete(new UpdateWrapper<SysRoleAcl>().eq("role_id", roleId));
     }
 
 }

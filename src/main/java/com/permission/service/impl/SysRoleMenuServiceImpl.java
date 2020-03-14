@@ -30,7 +30,7 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int deleteMenuByRoleId(Integer roleId) {
+    public int deleteRoleMenuByRoleId(Integer roleId) {
         if (roleId == null) {
             return 0;
         }

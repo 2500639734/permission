@@ -1,6 +1,5 @@
 package com.permission.dto;
 
-import com.permission.enumeration.CheckedEnum;
 import com.permission.pojo.SysRole;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,6 +24,6 @@ public class SysRoleDto extends SysRole implements Serializable {
      *  10-是，20-否
      * 若用户已拥有此角色则选中
      */
-    private Integer checked = CheckedEnum.NO_CHECKED.getCode();
+    private Integer checked;
 
 }

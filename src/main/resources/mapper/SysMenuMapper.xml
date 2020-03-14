@@ -23,6 +23,25 @@
         id, p_id, name, path, icon, type, create_user_id, create_user_name, create_time, update_user_id, update_user_name, update_time
     </sql>
 
+    <!-- 分页查询菜单列表 -->
+    <select id="selectSysMenuList" resultType="com.permission.pojo.SysMenu">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_menu as sm
+        where 1 = 1
+        <if test="sysMenuInput.search != null and sysMenuInput.search != ''">
+            and sm.name like concat(#{sysMenuInput.search}, '%')
+        </if>
+        <if test="sysMenuInput.root == true">
+            and sm.p_id = 0
+        </if>
+        <if test="sysMenuInput.createDateStart != null and sysMenuInput.createDateStart != ''
+                and sysMenuInput.createDateEnd != null and sysMenuInput.createDateEnd != ''" >
+            and date_format(sm.create_time, '%Y-%m-%d') between #{sysMenuInput.createDateStart} and #{sysMenuInput.createDateEnd}
+        </if>
+        order by sm.sort
+    </select>
+
     <!-- 获取用户包含的菜单列表 -->
     <select id="selectMenuListByUserId" resultMap="BaseResultMap">
         select
@@ -33,6 +52,7 @@
         left join sys_user_role as sur on sur.role_id = sr.id
         left join sys_user as su on su.id = sur.user_id
         where sm.type = 10 and su.id = #{userId}
+        order by sm.sort
     </select>
 
     <!-- 获取角色包含的菜单列表 -->
@@ -42,6 +62,7 @@
         from sys_menu as sm
         left join sys_role_menu as srm on srm.menu_id = sm.id
         where srm.role_id = #{roleId}
+        order by sm.sort
     </select>
 
 </mapper>

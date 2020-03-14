@@ -19,14 +19,14 @@ public interface SysUserService extends IService<SysUser> {
 
     /**
      * 分页查询用户列表
-     * @param sysUserInput
+     * @param sysUserInput 查询用户列表入参
      * @return
      */
     IPage<SysUser> selectSysUserList(SysUserInput sysUserInput);
 
     /**
      * 根据id查询用户
-     * @param id
+     * @param id 用户id
      * @return
      */
     SysUser selectUserById(Integer id);

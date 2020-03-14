@@ -72,6 +72,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 sysRoleIPage.getRecords().forEach(sysRoleDto -> {
                     if (sysUserRoleIdList.contains(sysRoleDto.getId())) {
                         sysRoleDto.setChecked(CheckedEnum.CHECKED.getCode());
+                    } else {
+                        sysRoleDto.setChecked(CheckedEnum.NO_CHECKED.getCode());
                     }
                 });
             }
@@ -231,6 +233,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             throw new BusinessException(ResultEnum.DELETE_ROLE_FAIL);
         }
 
+        // 删除角色菜单关联关系
+        sysRoleMenuService.deleteRoleMenuByRoleId(roleId);
+
+        // 删除角色权限关联关系
+        sysRoleAclService.deleteRoleAclByRoleId(roleId);
+
         return deleteRoleNumbers;
     }
 
@@ -258,7 +266,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         sysRoleMapper.updateById(sysRole);
 
         // 删除角色已存在的角色菜单关联关系
-        sysRoleMenuService.deleteMenuByRoleId(roleAuthorizationInput.getRoleId());
+        sysRoleMenuService.deleteRoleMenuByRoleId(roleAuthorizationInput.getRoleId());
 
         // 添加新的角色菜单
         List<SysRoleMenu> sysRoleMenuList = new ArrayList<>();

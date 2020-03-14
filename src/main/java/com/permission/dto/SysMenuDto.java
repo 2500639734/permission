@@ -1,6 +1,5 @@
 package com.permission.dto;
 
-import com.permission.enumeration.CheckedEnum;
 import com.permission.pojo.SysMenu;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,9 +23,14 @@ public class SysMenuDto extends SysMenu implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 菜单类型描述
+     */
+    private String typeDesc;
+
+    /**
      * 是否选中: 10-选中，20-未选中
      */
-    private Integer checked = CheckedEnum.NO_CHECKED.getCode();
+    private Integer checked;
 
     /**
      * SysMenu -> SysMenuDto

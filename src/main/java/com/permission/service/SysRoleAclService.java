@@ -40,4 +40,11 @@ public interface SysRoleAclService extends IService<SysRoleAcl> {
      */
     boolean deleteRoleAcls(SysUserInfo sysUserInfo, RoleAuthorizationInput roleAuthorizationInput);
 
+    /**
+     * 删除角色对应的角色权限关联关系
+     * @param roleId 角色id
+     * @return
+     */
+    int deleteRoleAclByRoleId (Integer roleId);
+
 }

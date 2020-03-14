@@ -1,11 +1,9 @@
 package com.permission.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.permission.constant.SysConstant;
 import com.permission.dto.input.sysacl.SysAclInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.SysAclDto;
@@ -64,6 +62,8 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
             // 设置是否选中
             if (sysRoleAclIdList.contains(sysAclDto.getId())) {
                 sysAclDto.setChecked(CheckedEnum.CHECKED.getCode());
+            } else {
+                sysAclDto.setChecked(CheckedEnum.NO_CHECKED.getCode());
             }
 
             // 设置请求方式名称

@@ -17,6 +17,6 @@ public interface SysRoleMenuService extends IService<SysRoleMenu> {
      * @param roleId 角色id
      * @return
      */
-    int deleteMenuByRoleId (Integer roleId);
+    int deleteRoleMenuByRoleId (Integer roleId);
 
 }
