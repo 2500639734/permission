@@ -87,4 +87,19 @@ public interface SysRoleService extends IService<SysRole> {
      */
     boolean authorizationMenu(SysUserInfo sysUserInfo, RoleAuthorizationInput roleAuthorizationInput);
 
+    /**
+     * 角色授权权限
+     * @param sysUserInfo 当前登录的用户信息
+     * @param roleAuthorizationInput 角色授权权限入参
+     * @return
+     */
+    boolean authorizationAcl(SysUserInfo sysUserInfo, RoleAuthorizationInput roleAuthorizationInput);
+
+    /**
+     * 取消角色授权的权限
+     * @param sysUserInfo 当前登录的用户信息
+     * @param roleAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    boolean cancelAuthorizationAcl(SysUserInfo sysUserInfo, RoleAuthorizationInput roleAuthorizationInput);
 }

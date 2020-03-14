@@ -1,11 +1,10 @@
 package com.permission.dto;
 
-import com.permission.enumeration.RequestTypeEnum;
+import com.permission.enumeration.CheckedEnum;
 import com.permission.pojo.SysAcl;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 
@@ -22,20 +21,13 @@ public class SysAclDto extends SysAcl implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 权限类型对应的请求方式
+     * 权限类型对应的请求方式名称
      */
-    private String typeMethod;
+    private String methodTypeName;
 
     /**
-     * sysAcl -> SysAclOutput
-     * @param sysAcl
-     * @return
+     * 是否选中：10-选中，20-未选中，默认未选中
      */
-    public static SysAclDto toSysAclOutPut (SysAcl sysAcl) {
-        SysAclDto sysAclOutput = new SysAclDto();
-        BeanUtils.copyProperties(sysAcl, sysAclOutput);
-        sysAclOutput.setTypeMethod(RequestTypeEnum.getNameByCode(sysAcl.getType()));
-        return sysAclOutput;
-    }
+    private Integer checked = CheckedEnum.NO_CHECKED.getCode();
 
 }

@@ -68,19 +68,19 @@ public enum ResultEnum {
     /**
      * 权限相关枚举
      */
-    PARENT_ACL_NOT_EXISTS (13001, "父级权限不存在"),
-    ACL_NAME_IS_NULL (13002, "请填写权限名称"),
-    ACL_NAME_NOT_REGEX(13003, "请检查权限名称是否正确"),
-    ACL_CODE_IS_NULL (13004, "请填写权限编码"),
-    ACL_CODE_NOT_REGEX (13005, "请检查权限编码是否正确"),
-    ACL_TYPE_IS_NULL (13006, "请选择权限类型"),
-    ADD_ACL_FILA (13007, "添加权限失败"),
-    UPDATE_ACL_FILA (13008, "更新权限失败"),
-    DELETE_ACL_FILA (13009, "删除权限失败"),
-    ACL_NOT_EXISTS (13010, "权限不存在"),
-    ACL_NAME_EXISTS (13011, "权限名称已存在"),
-    ACL_CODE_EXISTS (13013, "权限编码已存在"),
-    ACL_EXISTS (13013, "权限不存在");
+    ACL_NAME_IS_NULL (13001, "请填写权限名称"),
+    ACL_NAME_NOT_REGEX(13002, "请检查权限名称是否正确"),
+    ACL_CODE_IS_NULL (13003, "请填写权限编码"),
+    ACL_CODE_NOT_REGEX (13004, "请检查权限编码是否正确"),
+    ACL_TYPE_IS_NULL (13005, "请选择权限类型"),
+    ADD_ACL_FILA (13006, "添加权限失败"),
+    UPDATE_ACL_FILA (13007, "更新权限失败"),
+    DELETE_ACL_FILA (13008, "删除权限失败"),
+    ACL_NOT_EXISTS (13009, "权限不存在"),
+    ACL_NAME_EXISTS (13010, "权限名称已存在"),
+    ACL_CODE_EXISTS (13011, "权限编码已存在"),
+    ACL_EXISTS (13012, "权限不存在"),
+    NO_SELECTD_ACL (13013, "请选择对应权限");
 
 
 

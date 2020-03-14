@@ -3,6 +3,7 @@ package com.permission.mapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.permission.annotation.Permission;
+import com.permission.dto.SysAclDto;
 import com.permission.dto.input.sysacl.SysAclInput;
 import com.permission.pojo.SysAcl;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -27,7 +28,7 @@ public interface SysAclMapper extends BaseMapper<SysAcl> {
      * @param sysAclInput
      * @return
      */
-    IPage<SysAcl> selectAclList (@Param("page") Page page, @Param("sysAclInput") SysAclInput sysAclInput);
+    IPage<SysAclDto> selectAclList (@Param("page") Page page, @Param("sysAclInput") SysAclInput sysAclInput);
 
     /**
      * 获取用户包含的权限列表
@@ -36,4 +37,10 @@ public interface SysAclMapper extends BaseMapper<SysAcl> {
      */
     List<SysAcl> selectPermissionListByUserId (@Param("userId") Integer userId);
 
+    /**
+     * 获取角色拥有的权限列表
+     * @param roleId 角色id
+     * @return
+     */
+    List<SysAcl> selectAclsByRoleId(Integer roleId);
 }

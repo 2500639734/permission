@@ -27,4 +27,9 @@ public class RoleAuthorizationInput implements Serializable {
      */
     private List<Integer> authorizationMenuIdList;
 
+    /**
+     * 授权的权限id集合
+     */
+    private List<Integer> authorizationAclIdList;
+
 }

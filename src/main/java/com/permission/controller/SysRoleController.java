@@ -86,4 +86,26 @@ public class SysRoleController {
         return Result.success(sysRoleService.authorizationMenu(sysUserInfo, roleAuthorizationInput));
     }
 
+    /**
+     * 角色授权权限
+     * @param sysUserInfo 当前登录的用户信息
+     * @param roleAuthorizationInput 角色授权权限入参
+     * @return
+     */
+    @PostMapping("/authorizationAcl")
+    public Result authorizationAcl(@CasUser SysUserInfo sysUserInfo, @RequestBody RoleAuthorizationInput roleAuthorizationInput) {
+        return Result.success(sysRoleService.authorizationAcl(sysUserInfo, roleAuthorizationInput));
+    }
+
+    /**
+     * 取消角色授权的权限
+     * @param sysUserInfo 当前登录的用户信息
+     * @param roleAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    @PostMapping("/cancelAuthorizationAcl")
+    public Result cancelAuthorizationAcl(@CasUser SysUserInfo sysUserInfo, @RequestBody RoleAuthorizationInput roleAuthorizationInput) {
+        return Result.success(sysRoleService.cancelAuthorizationAcl(sysUserInfo, roleAuthorizationInput));
+    }
+
 }

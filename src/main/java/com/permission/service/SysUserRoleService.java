@@ -18,7 +18,7 @@ public interface SysUserRoleService extends IService<SysUserRole> {
 
     /**
      * 查询用户已存在的用户角色关联关系
-     * @param userId
+     * @param userId 用户id
      * @return
      */
     List<SysUserRole> selectSysUserRoleByUserId (Integer userId);

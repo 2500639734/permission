@@ -47,7 +47,7 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
 
     /**
      * 查询用户已存在的用户角色关联关系
-     * @param userId
+     * @param userId 用户id
      * @return
      */
     @Override
@@ -74,7 +74,7 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         // 过滤原本已存在的用户角色关系
         List<Integer> roleIdList = userAuthorizationInput.getAuthorizationRoleIdList();
         List<Integer> oldRoleIds = selectSysUserRoleByUserId(userAuthorizationInput.getUserId()).stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
-        roleIdList = roleIdList.stream().filter(sysRole -> ! oldRoleIds.contains(sysRole)).collect(Collectors.toList());
+        roleIdList = roleIdList.stream().filter(roleId -> ! oldRoleIds.contains(roleId)).collect(Collectors.toList());
 
         // 授权的角色原本已有权限则不重复添加
         if (CollectionUtil.isEmpty(roleIdList)) {
@@ -146,7 +146,8 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
 
         // 删除用户角色关系
         return sysUserRoleMapper.delete(
-                new QueryWrapper<SysUserRole>().in("role_id", userAuthorizationInput.getAuthorizationRoleIdList())
+                new QueryWrapper<SysUserRole>()
+                        .eq("user_id", userAuthorizationInput.getUserId()).in("role_id", userAuthorizationInput.getAuthorizationRoleIdList())
         ) > 0;
     }
 

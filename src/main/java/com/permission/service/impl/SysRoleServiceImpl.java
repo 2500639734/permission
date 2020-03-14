@@ -16,6 +16,7 @@ import com.permission.exception.BusinessException;
 import com.permission.pojo.SysRole;
 import com.permission.mapper.SysRoleMapper;
 import com.permission.pojo.SysRoleMenu;
+import com.permission.service.SysRoleAclService;
 import com.permission.service.SysRoleMenuService;
 import com.permission.service.SysRoleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -49,6 +50,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Autowired
     private SysRoleMenuService sysRoleMenuService;
+
+    @Autowired
+    private SysRoleAclService sysRoleAclService;
 
     /**
      * 查询角色列表
@@ -254,10 +258,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         sysRoleMapper.updateById(sysRole);
 
         // 删除角色已存在的角色菜单关联关系
-        int deleteNums = sysRoleMenuService.deleteMenuByRoleId(sysRole.getId());
-        if (deleteNums <= 0) {
-            throw new BusinessException(ResultEnum.ROLE_AUTHORIZATION_MENU_FAIL);
-        }
+        sysRoleMenuService.deleteMenuByRoleId(roleAuthorizationInput.getRoleId());
 
         // 添加新的角色菜单
         List<SysRoleMenu> sysRoleMenuList = new ArrayList<>();
@@ -269,6 +270,30 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         });
 
         return sysRoleMenuService.saveBatch(sysRoleMenuList);
+    }
+
+    /**
+     * 角色授权权限
+     * @param sysUserInfo 当前登录的用户信息
+     * @param roleAuthorizationInput 角色授权权限入参
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean authorizationAcl(SysUserInfo sysUserInfo, RoleAuthorizationInput roleAuthorizationInput) {
+        return sysRoleAclService.addRoleAcls(sysUserInfo, roleAuthorizationInput);
+    }
+
+    /**
+     * 取消角色授权的权限
+     * @param sysUserInfo 当前登录的用户信息
+     * @param roleAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean cancelAuthorizationAcl(SysUserInfo sysUserInfo, RoleAuthorizationInput roleAuthorizationInput) {
+        return sysRoleAclService.deleteRoleAcls(sysUserInfo, roleAuthorizationInput);
     }
 
 }
