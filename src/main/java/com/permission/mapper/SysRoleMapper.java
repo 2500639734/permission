@@ -2,6 +2,7 @@ package com.permission.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.permission.dto.SysRoleDto;
 import com.permission.dto.input.sysrole.SysRoleInput;
 import com.permission.pojo.SysRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -25,13 +26,13 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
      * @param sysRoleInput
      * @return
      */
-    IPage<SysRole> selectRoleList (@Param("page") Page page, @Param("selectRoleInput") SysRoleInput sysRoleInput);
+    IPage<SysRoleDto> selectSysRoleList (@Param("page") Page page, @Param("sysRoleInput") SysRoleInput sysRoleInput);
 
     /**
      * 用户id查询角色列表
      * @param userId
      * @return
      */
-    List<SysRole> selectRoleListByUserId (@Param("userId") Integer userId);
+    List<SysRole> selectSysRoleListByUserId (@Param("userId") Integer userId);
 
 }

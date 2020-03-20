@@ -67,13 +67,6 @@ public interface SysAclService extends IService<SysAcl> {
     boolean hasAcl (Integer userId, String aclCode, HttpServletRequest request);
 
     /**
-     * 根据父级权限id查询父级权限
-     * @param pid 父级权限id
-     * @return
-     */
-    SysAcl selectParentAclByPid (Integer pid);
-
-    /**
      * 根据权限名称查询权限
      * @param name 权限名称
      * @return
@@ -93,5 +86,12 @@ public interface SysAclService extends IService<SysAcl> {
      * @return
      */
     List<SysAcl> selectAclsByIds (List<Integer> ids);
+
+    /**
+     * 获取角色拥有的权限列表
+     * @param roleId 角色id
+     * @return
+     */
+    List<SysAcl> selectAclsByRoleId (Integer roleId);
 
 }

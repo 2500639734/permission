@@ -1,6 +1,6 @@
 package com.permission.dto;
 
-import com.permission.pojo.SysAcl;
+import com.permission.pojo.SysRole;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -9,23 +9,20 @@ import java.io.Serializable;
 
 /**
  * @auther: shenke
- * @date: 2020/2/25 19:58
- * @description: 权限查询返参
+ * @date: 2020/3/8 16:30
+ * @description: 角色查询返参
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SysAclDto extends SysAcl implements Serializable {
+public class SysRoleDto extends SysRole implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 权限类型对应的请求方式名称
-     */
-    private String methodTypeName;
-
-    /**
-     * 是否选中：10-选中，20-未选中
+     * 是否选中：
+     *  10-是，20-否
+     * 若用户已拥有此角色则选中
      */
     private Integer checked;
 

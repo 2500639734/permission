@@ -13,4 +13,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenu> {
 
+    /**
+     * 删除角色对应的菜单
+     * @param roleId 角色id
+     * @return
+     */
+    int deleteMenuByRoleId(Integer roleId);
+
 }

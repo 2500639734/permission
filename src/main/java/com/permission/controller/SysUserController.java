@@ -7,9 +7,7 @@ import com.permission.annotation.NoPermission;
 import com.permission.annotation.Permission;
 import com.permission.annotation.RestFulPermission;
 import com.permission.common.Result;
-import com.permission.dto.input.sysuser.SysUserInfo;
-import com.permission.dto.input.sysuser.SysUserLoginInput;
-import com.permission.dto.input.sysuser.SysUserInput;
+import com.permission.dto.input.sysuser.*;
 import com.permission.pojo.SysUser;
 import com.permission.service.SysUserService;
 import com.permission.util.CookieUtils;
@@ -96,6 +94,7 @@ public class SysUserController {
      * @param request
      * @return
      */
+    @NoPermission
     @PostMapping("/logout")
     public Result logout (HttpServletRequest request) {
         sysUserService.logout(request);
@@ -110,6 +109,28 @@ public class SysUserController {
     @PostMapping("/getCurrentCasUserInfo")
     public Result getCurrentCasUserInfo(HttpServletRequest request) {
         return Result.success(CookieUtils.currentCasUserInfo(request));
+    }
+
+    /**
+     * 用户授权角色
+     * @param sysUserInfo 当前登录的用户信息
+     * @param userAuthorizationInput 用户授权角色入参
+     * @return
+     */
+    @PostMapping("/authorizationRole")
+    public Result authorizationRole(@CasUser SysUserInfo sysUserInfo, @RequestBody UserAuthorizationInput userAuthorizationInput) {
+        return Result.success(sysUserService.authorizationRole(sysUserInfo, userAuthorizationInput));
+    }
+
+    /**
+     * 取消用户授权的角色
+     * @param sysUserInfo 当前登录的用户信息
+     * @param userAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    @PostMapping("/cancelAuthorizationRole")
+    public Result cancelAuthorizationRole(@CasUser SysUserInfo sysUserInfo, @RequestBody UserAuthorizationInput userAuthorizationInput) {
+        return Result.success(sysUserService.cancelAuthorizationRole(sysUserInfo, userAuthorizationInput));
     }
 
 }

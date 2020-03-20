@@ -16,6 +16,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class SpringExceptionResolver {
 
+    /**
+     * 统一异常处理,主要处理参数错误,统一响应json
+     * @param e
+     * @return
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Result httpMessageNotReadableException (HttpMessageNotReadableException e) {
         log.error("[请求异常]", e);

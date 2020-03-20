@@ -1,25 +1,27 @@
 package com.permission.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.permission.dto.SysRoleDto;
+import com.permission.dto.input.sysrole.RoleAuthorizationInput;
 import com.permission.dto.input.sysrole.SysRoleInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
+import com.permission.enumeration.WhetherEnum;
 import com.permission.enumeration.RegexEnum;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
-import com.permission.pojo.SysAcl;
 import com.permission.pojo.SysRole;
 import com.permission.mapper.SysRoleMapper;
-import com.permission.pojo.SysRoleAcl;
-import com.permission.service.SysAclService;
+import com.permission.pojo.SysRoleMenu;
 import com.permission.service.SysRoleAclService;
+import com.permission.service.SysRoleMenuService;
 import com.permission.service.SysRoleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.permission.service.SysUserRoleService;
 import com.permission.util.PinyinUtils;
-import com.permission.util.ValidatedUtils;
+import com.permission.util.ObjectUtils;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -46,13 +49,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     private SysRoleMapper sysRoleMapper;
 
     @Autowired
-    private SysUserRoleService sysUserRoleService;
+    private SysRoleMenuService sysRoleMenuService;
 
     @Autowired
     private SysRoleAclService sysRoleAclService;
-    
-    @Autowired
-    private SysAclService sysAclService;
 
     /**
      * 查询角色列表
@@ -60,9 +60,37 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
      * @return
      */
     @Override
-    public IPage<SysRole> selectRoleList(SysRoleInput sysRoleInput) {
+    public IPage<SysRoleDto> selectSysRoleList(SysRoleInput sysRoleInput) {
         Page page = new Page(sysRoleInput.getPageStart(), sysRoleInput.getPageSize());
-        return sysRoleMapper.selectRoleList(page, sysRoleInput);
+        IPage<SysRoleDto> sysRoleIPage = sysRoleMapper.selectSysRoleList(page, sysRoleInput);
+
+        // 获取用户已拥有的角色列表,若用户已包含角色则默认选中
+        if (sysRoleInput != null && sysRoleInput.getUserId() != null) {
+            List<Integer> sysUserRoleIdList = selectSysRoleListByUserId(sysRoleInput.getUserId()).stream().map(SysRole::getId).collect(Collectors.toList());
+            sysRoleIPage.getRecords().forEach(sysRoleDto -> {
+                if (sysUserRoleIdList.contains(sysRoleDto.getId())) {
+                    sysRoleDto.setChecked(WhetherEnum.YES.getCode());
+                } else {
+                    sysRoleDto.setChecked(WhetherEnum.NO.getCode());
+                }
+            });
+        }
+
+        return sysRoleIPage;
+    }
+
+    /**
+     * 角色id查询角色
+     * @param id 角色id
+     * @return
+     */
+    @Override
+    public SysRole selectRoleById(Integer id) {
+        if (id == null) {
+            return null;
+        }
+
+        return sysRoleMapper.selectById(id);
     }
 
     /**
@@ -94,6 +122,20 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     }
 
     /**
+     * 查询用户包含的角色列表
+     * @param userId 用户id
+     * @return
+     */
+    @Override
+    public List<SysRole> selectSysRoleListByUserId(Integer userId) {
+        if (userId == null) {
+            return null;
+        }
+
+        return sysRoleMapper.selectSysRoleListByUserId(userId);
+    }
+
+    /**
      * 添加角色
      * @param sysUserInfo 当前登录用户信息
      * @param sysRoleInput 添加角色入参
@@ -103,9 +145,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public SysRole addRole(SysUserInfo sysUserInfo, SysRoleInput sysRoleInput) {
         // 参数校验
-        ValidatedUtils.objectIsNuLL(sysRoleInput, ResultEnum.PARAM_ERROR);
-        ValidatedUtils.objectIsNuLL(sysRoleInput.getName(), ResultEnum.ROLE_NAME_IS_NULL);
-        ValidatedUtils.strIsMatchRegex(sysRoleInput.getName(), RegexEnum.ROLE_NAME.getRegex(), ResultEnum.ROLE_NAME_NOT_REGEX);
+        ObjectUtils.isNull(sysRoleInput, ResultEnum.PARAM_ERROR);
+        ObjectUtils.isNull(sysRoleInput.getName(), ResultEnum.ROLE_NAME_IS_NULL);
+        ObjectUtils.strIsMatchRegex(sysRoleInput.getName(), RegexEnum.ROLE_NAME.getRegex(), ResultEnum.ROLE_NAME_NOT_REGEX);
 
         // 校验角色是否存在
         String code = PinyinUtils.getPingYin(sysRoleInput.getName(), HanyuPinyinCaseType.LOWERCASE);
@@ -143,17 +185,17 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public SysRole updateRole(SysUserInfo sysUserInfo, SysRoleInput sysRoleInput) {
         // 参数校验
-        ValidatedUtils.objectIsNuLL(sysRoleInput, ResultEnum.PARAM_ERROR);
-        ValidatedUtils.objectIsNuLL(sysRoleInput.getId(), ResultEnum.PARAM_ERROR);
-        ValidatedUtils.objectIsNuLL(sysRoleInput.getName(), ResultEnum.ROLE_NAME_IS_NULL);
-        ValidatedUtils.strIsMatchRegex(sysRoleInput.getName(), RegexEnum.ROLE_NAME.getRegex(), ResultEnum.ROLE_NAME_NOT_REGEX);
+        ObjectUtils.isNull(sysRoleInput, ResultEnum.PARAM_ERROR);
+        ObjectUtils.isNull(sysRoleInput.getId(), ResultEnum.PARAM_ERROR);
+        ObjectUtils.isNull(sysRoleInput.getName(), ResultEnum.ROLE_NAME_IS_NULL);
+        ObjectUtils.strIsMatchRegex(sysRoleInput.getName(), RegexEnum.ROLE_NAME.getRegex(), ResultEnum.ROLE_NAME_NOT_REGEX);
 
         // 修改了名称则校验名称是否重复
         SysRole sysRole = sysRoleMapper.selectById(sysRoleInput.getId());
         if (! sysRoleInput.getName().equals(sysRole.getName())) {
             String code = PinyinUtils.getPingYin(sysRoleInput.getName(), HanyuPinyinCaseType.LOWERCASE);
             SysRole selectRole = selectRoleByCode(code);
-            ValidatedUtils.objectIsNotNuLL(selectRole, ResultEnum.ROLE_NAME_EXISTS);
+            ObjectUtils.isNotNull(selectRole, ResultEnum.ROLE_NAME_EXISTS);
         }
 
         // 更新角色信息
@@ -176,11 +218,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public int deleteRole(Integer roleId) {
         // 参数校验
-        ValidatedUtils.objectIsNuLL(roleId, ResultEnum.PARAM_ERROR);
+        ObjectUtils.isNull(roleId, ResultEnum.PARAM_ERROR);
 
         // 角色是否存在
         SysRole sysRole = sysRoleMapper.selectById(roleId);
-        ValidatedUtils.objectIsNuLL(sysRole, ResultEnum.ROLE_NOT_EXISTS);
+        ObjectUtils.isNull(sysRole, ResultEnum.ROLE_NOT_EXISTS);
 
         // 删除角色
         int deleteRoleNumbers = sysRoleMapper.deleteById(roleId);
@@ -188,55 +230,75 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             throw new BusinessException(ResultEnum.DELETE_ROLE_FAIL);
         }
 
-        // 删除角色关联的用户
-        sysUserRoleService.deleteRoleUsers(roleId);
+        // 删除角色菜单关联关系
+        sysRoleMenuService.deleteRoleMenuByRoleId(roleId);
 
-        // 删除角色关联的权限
-        sysRoleAclService.deleteRoleAcls(roleId);
+        // 删除角色权限关联关系
+        sysRoleAclService.deleteRoleAclByRoleId(roleId);
 
         return deleteRoleNumbers;
     }
 
     /**
-     * 角色授权
+     * 角色授权 / 取消授权菜单
      * @param sysUserInfo 当前登录用户信息
-     * @param sysRoleInput 角色授权入参
+     * @param roleAuthorizationInput 角色授权 / 取消授权入参
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public boolean roleAuthorization(SysUserInfo sysUserInfo, SysRoleInput sysRoleInput) {
-        // 参数校验
-        ValidatedUtils.objectIsNuLL(sysRoleInput, ResultEnum.PARAM_ERROR);
-        ValidatedUtils.objectIsNuLL(sysRoleInput.getId(), ResultEnum.PARAM_ERROR);
-        ValidatedUtils.collectionIsNull(sysRoleInput.getAclIds(), ResultEnum.PARAM_ERROR);
-        
-        // 查询角色
-        SysRole sysRole = sysRoleMapper.selectById(sysRoleInput.getId());
-        ValidatedUtils.objectIsNuLL(sysRole, ResultEnum.ROLE_NOT_EXISTS);
+    public boolean authorizationMenu(SysUserInfo sysUserInfo, RoleAuthorizationInput roleAuthorizationInput) {
+        // 校验参数
+        ObjectUtils.isNull(ResultEnum.PARAM_ERROR,
+                roleAuthorizationInput, roleAuthorizationInput.getRoleId(), roleAuthorizationInput.getAuthorizationMenuIdList());
 
-        // 查询权限集合
-        List<SysAcl> sysAclList = sysAclService.selectAclsByIds(sysRoleInput.getAclIds());
-        ValidatedUtils.collectionIsNull(sysAclList, ResultEnum.ACL_EXISTS);
-        
-        // 保存角色权限关系
-        List<SysRoleAcl> sysRoleAclList = new ArrayList<>();
-        sysAclList.forEach(sysAcl -> {
-            SysRoleAcl sysRoleAcl = new SysRoleAcl()
-                    .setRoleId(sysRoleInput.getId())
-                    .setAclId(sysAcl.getId());
-            sysRoleAclList.add(sysRoleAcl);
-        });
-        boolean authorization = sysRoleAclService.saveBatch(sysRoleAclList);
-        ValidatedUtils.isTrue(authorization, ResultEnum.ROLE_AUTHORIZATION_FAIL);
+        // 校验角色是否存在
+        SysRole sysRole = selectRoleById(roleAuthorizationInput.getRoleId());
+        ObjectUtils.isNull(sysRole, ResultEnum.ROLE_NOT_EXISTS);
 
         // 更新角色操作人信息
-        sysRole.setUpdateTime(new Date())
-                .setUpdateUserId(sysUserInfo.getId())
-                .setUpdateUserName(sysUserInfo.getUsername());
+        sysRole.setUpdateUserId(sysUserInfo.getId())
+                .setUpdateUserName(sysUserInfo.getName())
+                .setUpdateTime(new Date());
         sysRoleMapper.updateById(sysRole);
 
-        return authorization;
+        // 删除角色已存在的角色菜单关联关系
+        sysRoleMenuService.deleteRoleMenuByRoleId(roleAuthorizationInput.getRoleId());
+
+        // 添加新的角色菜单
+        List<SysRoleMenu> sysRoleMenuList = new ArrayList<>();
+        roleAuthorizationInput.getAuthorizationMenuIdList().forEach(menuId -> {
+            SysRoleMenu sysRoleMenu = new SysRoleMenu();
+            sysRoleMenu.setRoleId(roleAuthorizationInput.getRoleId());
+            sysRoleMenu.setMenuId(menuId);
+            sysRoleMenuList.add(sysRoleMenu);
+        });
+
+        return sysRoleMenuService.saveBatch(sysRoleMenuList);
+    }
+
+    /**
+     * 角色授权权限
+     * @param sysUserInfo 当前登录的用户信息
+     * @param roleAuthorizationInput 角色授权权限入参
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean authorizationAcl(SysUserInfo sysUserInfo, RoleAuthorizationInput roleAuthorizationInput) {
+        return sysRoleAclService.addRoleAcls(sysUserInfo, roleAuthorizationInput);
+    }
+
+    /**
+     * 取消角色授权的权限
+     * @param sysUserInfo 当前登录的用户信息
+     * @param roleAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean cancelAuthorizationAcl(SysUserInfo sysUserInfo, RoleAuthorizationInput roleAuthorizationInput) {
+        return sysRoleAclService.deleteRoleAcls(sysUserInfo, roleAuthorizationInput);
     }
 
 }

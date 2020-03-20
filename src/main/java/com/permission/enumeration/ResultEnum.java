@@ -31,7 +31,7 @@ public enum ResultEnum {
      * 用户相关枚举
      */
     NAME_IS_NULL (10001, "请填写姓名"),
-    NAME__NOT_REGEX (10001, "请检查姓名是否正确"),
+    NAME_NOT_REGEX (10001, "请检查姓名是否正确"),
     USERNAME_IS_NULL (10001, "请填写用户名"),
     USERNAME_NOT_REGEX (1002, "请检查用户名是否正确"),
     PASSWORD_IS_NULL (10003, "请填写密码"),
@@ -43,7 +43,8 @@ public enum ResultEnum {
     ADD_USER_FAIL (10009, "添加用户失败"),
     UPDATE_USER_FAIL (10010, "更新用户失败"),
     DELETE_USER_FAIL (10011, "删除用户失败"),
-    USERNAME_EXISTS (10012, "用户名已存在"),
+    USERNAME_EXISTS (10013, "用户名已存在"),
+    USER_AUTHORIZATION_FAIL (10013, "授权角色失败"),
 
     /**
      * 角色相关枚举
@@ -56,24 +57,36 @@ public enum ResultEnum {
     NO_SELECTD_ROLE (11007, "请选择对应角色"),
     ROLE_NAME_EXISTS (11008, "角色名称已存在"),
     DELETE_ROLE_FAIL (11009, "删除角色失败"),
-    ROLE_AUTHORIZATION_FAIL (11010, "角色授权失败"),
+    ROLE_AUTHORIZATION_MENU_FAIL (11010, "授权菜单权限失败"),
+    ROLE_AUTHORIZATION_INTERFACE_FAIL (11010, "授权接口权限失败"),
+
+    /**
+     * 菜单相关枚举
+     */
+    NO_SELECTD_MENU (12001, "请选择对应菜单"),
+    MENU_NAME_NOT_REGEX (12002, "请检查菜单名称是否正确"),
+    MENU_PATH_NOT_REGEX (12003, "请检查菜单路由地址是否正确"),
+    MENU_ICON_NOT_REGEX (12004, "请检查菜单图标是否正确"),
+    MENU_TYPE_ERROR (12005, "请检查菜单类型是否正确"),
+    MENU_SORT_ERROR (12006, "请检查菜单顺序是否正确"),
+    MENU_SORT_EXISTS (12007, "菜单顺序已存在"),
 
     /**
      * 权限相关枚举
      */
-    PARENT_ACL_NOT_EXISTS (12001, "父级权限不存在"),
-    ACL_NAME_IS_NULL (12002, "请填写权限名称"),
-    ACL_NAME_NOT_REGEX(12003, "请检查权限名称是否正确"),
-    ACL_CODE_IS_NULL (12004, "请填写权限编码"),
-    ACL_CODE_NOT_REGEX (12005, "请检查权限编码是否正确"),
-    ACL_TYPE_IS_NULL (12006, "请选择权限类型"),
-    ADD_ACL_FILA (12007, "添加权限失败"),
-    UPDATE_ACL_FILA (12008, "更新权限失败"),
-    DELETE_ACL_FILA (12009, "删除权限失败"),
-    ACL_NOT_EXISTS (12010, "权限不存在"),
-    ACL_NAME_EXISTS (12011, "权限名称已存在"),
-    ACL_CODE_EXISTS (12012, "权限编码已存在"),
-    ACL_EXISTS (12013, "权限不存在");
+    ACL_NAME_IS_NULL (13001, "请填写权限名称"),
+    ACL_NAME_NOT_REGEX(13002, "请检查权限名称是否正确"),
+    ACL_CODE_IS_NULL (13003, "请填写权限编码"),
+    ACL_CODE_NOT_REGEX (13004, "请检查权限编码是否正确"),
+    ACL_TYPE_IS_NULL (13005, "请选择权限类型"),
+    ADD_ACL_FILA (13006, "添加权限失败"),
+    UPDATE_ACL_FILA (13007, "更新权限失败"),
+    DELETE_ACL_FILA (13008, "删除权限失败"),
+    ACL_NOT_EXISTS (13009, "权限不存在"),
+    ACL_NAME_EXISTS (13010, "权限名称已存在"),
+    ACL_CODE_EXISTS (13011, "权限编码已存在"),
+    ACL_EXISTS (13012, "权限不存在"),
+    NO_SELECTD_ACL (13013, "请选择对应权限");
 
 
 

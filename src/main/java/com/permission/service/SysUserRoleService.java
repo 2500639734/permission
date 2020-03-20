@@ -1,8 +1,9 @@
 package com.permission.service;
 
+import com.permission.dto.input.sysuser.SysUserInfo;
+import com.permission.dto.input.sysuser.UserAuthorizationInput;
 import com.permission.pojo.SysUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
-
 import java.util.List;
 
 /**
@@ -17,18 +18,26 @@ public interface SysUserRoleService extends IService<SysUserRole> {
 
     /**
      * 查询用户已存在的用户角色关联关系
-     * @param userId
+     * @param userId 用户id
      * @return
      */
     List<SysUserRole> selectSysUserRoleByUserId (Integer userId);
 
     /**
      * 添加用户角色关系
-     * @param userId
-     * @param roleIdList
+     * @param sysUserInfo 当前登录用户信息
+     * @param userAuthorizationInput 用户授权角色入参
      * @return
      */
-    boolean addUserRoles(Integer userId, List<Integer> roleIdList);
+    boolean addUserRoles(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput);
+
+    /**
+     * 删除用户角色关系
+     * @param sysUserInfo 当前登录用户信息
+     * @param userAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    boolean deleteUserRoles(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput);
 
     /**
      * 删除用户关联的角色
@@ -36,12 +45,5 @@ public interface SysUserRoleService extends IService<SysUserRole> {
      * @return
      */
     int deleteUserRoles(Integer userId);
-
-    /**
-     * 删除角色关联的用户
-     * @param roleId 角色id
-     * @return
-     */
-    int deleteRoleUsers(Integer roleId);
 
 }

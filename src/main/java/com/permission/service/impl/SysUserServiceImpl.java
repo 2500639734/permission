@@ -4,17 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.permission.dto.SysMenuTree;
-import com.permission.dto.input.sysuser.SysUserInfo;
-import com.permission.dto.input.sysuser.SysUserLoginInput;
-import com.permission.dto.input.sysuser.CasUserInfo;
-import com.permission.dto.input.sysuser.SysUserInput;
+import com.permission.dto.input.sysuser.*;
 import com.permission.enumeration.PrimaryCodeEnum;
 import com.permission.enumeration.RegexEnum;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
+import com.permission.pojo.SysRole;
 import com.permission.pojo.SysUser;
 import com.permission.mapper.SysUserMapper;
 import com.permission.service.SysMenuService;
+import com.permission.service.SysRoleService;
 import com.permission.service.SysUserRoleService;
 import com.permission.service.SysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -44,11 +43,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private SysUserMapper sysUserMapper;
 
     @Autowired
-    private SysMenuService sysMenuService;
+    private SysRoleService sysRoleService;
 
     @Autowired
     private SysUserRoleService sysUserRoleService;
 
+    @Autowired
+    private SysMenuService sysMenuService;
+
+    /**
+     * 分页查询用户列表
+     * @param sysUserInput
+     * @return
+     */
     @Override
     public IPage<SysUser> selectSysUserList(SysUserInput sysUserInput) {
         Page<SysUser> page = new Page<>(sysUserInput.getPageStart(), sysUserInput.getPageSize());
@@ -99,7 +106,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser selectUser = selectUserByUsername(sysUserInput.getUsername());
 
         // 用户已存在
-        ValidatedUtils.objectIsNotNuLL(selectUser, ResultEnum.USER_EXISTS);
+        ObjectUtils.isNotNull(selectUser, ResultEnum.USER_EXISTS);
 
         // 保存用户
         String passwordSalt = EncryptionUtils.uuid();
@@ -129,6 +136,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param sysUserInput 修改用户入参
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public SysUserInfo updateUser(SysUserInfo sysUserInfo, SysUserInput sysUserInput) {
         // 参数校验
@@ -136,7 +144,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         // 用户是否存在
         SysUser sysUser = selectUserById(sysUserInput.getId());
-        ValidatedUtils.objectIsNuLL(sysUser, ResultEnum.USER_NOT_EXISTS);
+        ObjectUtils.isNull(sysUser, ResultEnum.USER_NOT_EXISTS);
 
         // 更新用户
         sysUser.setName(sysUserInput.getName())
@@ -157,14 +165,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param userId 用户id
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Integer deleteUser(Integer userId) {
         // 校验参数
-        ValidatedUtils.objectIsNuLL(userId, ResultEnum.PARAM_ERROR);
+        ObjectUtils.isNull(userId, ResultEnum.PARAM_ERROR);
 
         // 用户是否存在
         SysUser sysUser = sysUserMapper.selectById(userId);
-        ValidatedUtils.objectIsNuLL(sysUser, ResultEnum.USER_NOT_EXISTS);
+        ObjectUtils.isNull(sysUser, ResultEnum.USER_NOT_EXISTS);
 
         // 删除用户
         int deleteNumber = sysUserMapper.deleteById(userId);
@@ -185,25 +194,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     private void validUserInput (SysUserInput sysUserInput, boolean isUpdate) {
         // 必填参数校验
-        ValidatedUtils.objectIsNuLL(sysUserInput, ResultEnum.PARAM_ERROR);
+        ObjectUtils.isNull(sysUserInput, ResultEnum.PARAM_ERROR);
         if (isUpdate) {
-            ValidatedUtils.objectIsNuLL(sysUserInput.getId(), ResultEnum.PARAM_ERROR);
+            ObjectUtils.isNull(sysUserInput.getId(), ResultEnum.PARAM_ERROR);
         }
 
         // 用户姓名
-        ValidatedUtils.strIsNull(sysUserInput.getName(), ResultEnum.NAME_IS_NULL);
-        ValidatedUtils.strIsMatchRegex(sysUserInput.getName(), RegexEnum.NAME.getRegex(), ResultEnum.NAME__NOT_REGEX);
+        ObjectUtils.strIsNull(sysUserInput.getName(), ResultEnum.NAME_IS_NULL);
+        ObjectUtils.strIsMatchRegex(sysUserInput.getName(), RegexEnum.NAME.getRegex(), ResultEnum.NAME_NOT_REGEX);
 
         // 用户名
         if (! isUpdate) {
-            ValidatedUtils.strIsNull(sysUserInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
-            ValidatedUtils.strIsMatchRegex(sysUserInput.getUsername(), RegexEnum.USERNAME.getRegex(), ResultEnum.USERNAME_NOT_REGEX);
+            ObjectUtils.strIsNull(sysUserInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
+            ObjectUtils.strIsMatchRegex(sysUserInput.getUsername(), RegexEnum.USERNAME.getRegex(), ResultEnum.USERNAME_NOT_REGEX);
         }
 
         // 用户密码
         if (! isUpdate) {
-            ValidatedUtils.strIsNull(sysUserInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
-            ValidatedUtils.strIsMatchRegex(sysUserInput.getPassword(), RegexEnum.PASSWORD.getRegex(), ResultEnum.PASSWORD_NOT_REGEX);
+            ObjectUtils.strIsNull(sysUserInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
+            ObjectUtils.strIsMatchRegex(sysUserInput.getPassword(), RegexEnum.PASSWORD.getRegex(), ResultEnum.PASSWORD_NOT_REGEX);
         }
 
     }
@@ -216,9 +225,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public String login(HttpServletResponse response, SysUserLoginInput sysUserLoginInput) {
         // 参数校验
-        ValidatedUtils.objectIsNuLL(sysUserLoginInput, ResultEnum.PARAM_ERROR);
-        ValidatedUtils.strIsNull(sysUserLoginInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
-        ValidatedUtils.objectIsNuLL(sysUserLoginInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
+        ObjectUtils.isNull(sysUserLoginInput, ResultEnum.PARAM_ERROR);
+        ObjectUtils.strIsNull(sysUserLoginInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
+        ObjectUtils.isNull(sysUserLoginInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
 
         // 根据用户名查询用户
         SysUser sysUser = selectUserByUsername(sysUserLoginInput.getUsername());
@@ -234,10 +243,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BusinessException(ResultEnum.USERNAME_OR_PASSWORD_ERROR);
         }
 
-        // 设置用户拥有的菜单树形列表
+        // 获取用户拥有的角色列表
+        List<SysRole> sysRoleList = sysRoleService.selectSysRoleListByUserId(sysUser.getId());
+
+        // 获取用户拥有的菜单树形列表
         List<SysMenuTree> sysMenuTreeList = sysMenuService.selectMenuTreeByUserId(sysUser.getId());
+
+        // 设置用户信息
         CasUserInfo casUserInfo = new CasUserInfo()
                 .setSysUserInfo(SysUserInfo.toSysUserInfo(sysUser))
+                .setSysRoleList(sysRoleList)
                 .setSysMenuTreeList(sysMenuTreeList);
 
         // 保存token到cookie
@@ -262,6 +277,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (StringUtils.isNotEmpty(tokenKey)) {
             RedisUtils.del(tokenKey);
         }
+    }
+
+    /**
+     * 用户授权角色
+     * @param sysUserInfo 当前登录的用户信息
+     * @param userAuthorizationInput 用户授权角色入参
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean authorizationRole(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput) {
+        return sysUserRoleService.addUserRoles(sysUserInfo, userAuthorizationInput);
+    }
+
+    /**
+     * 取消用户授权的角色
+     * @param sysUserInfo 当前登录的用户信息
+     * @param userAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public boolean cancelAuthorizationRole(SysUserInfo sysUserInfo, UserAuthorizationInput userAuthorizationInput) {
+        return sysUserRoleService.deleteUserRoles(sysUserInfo, userAuthorizationInput);
     }
 
 }

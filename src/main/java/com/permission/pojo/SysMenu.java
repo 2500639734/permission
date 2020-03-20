@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -32,7 +33,7 @@ public class SysMenu implements Serializable {
     /**
      * 父级菜单id：0-当前菜单为父级菜单
      */
-    private Integer pId;
+    private Integer pid;
 
     /**
      * 菜单名称
@@ -55,9 +56,19 @@ public class SysMenu implements Serializable {
     private Integer type;
 
     /**
+     * 顺序,数字从小到大升序
+     */
+    private Integer sort;
+
+    /**
+     * 是否包含子菜单：10-是，20-否
+     */
+    private Integer hasChild;
+
+    /**
      * 创建人id
      */
-    private String createUserId;
+    private Integer createUserId;
 
     /**
      * 创建人姓名(冗余)
@@ -72,7 +83,7 @@ public class SysMenu implements Serializable {
     /**
      * 更新人id
      */
-    private String updateUserId;
+    private Integer updateUserId;
 
     /**
      * 更新人姓名(冗余)

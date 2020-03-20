@@ -12,9 +12,9 @@ import java.util.regex.Pattern;
  * @date: 2019/10/31 20:17
  * @description: 验证工具类
  */
-public class ValidatedUtils {
+public class ObjectUtils {
 
-    private ValidatedUtils () {
+    private ObjectUtils() {
 
     }
 
@@ -23,9 +23,22 @@ public class ValidatedUtils {
      * @param obj
      * @param resultEnum
      */
-    public static void objectIsNuLL (Object obj, ResultEnum resultEnum) {
+    public static void isNull (Object obj, ResultEnum resultEnum) {
         if (obj == null) {
             throw new BusinessException(resultEnum);
+        }
+    }
+
+    /**
+     * 校验多个对象是否为空
+     * @param resultEnum
+     * @param objs
+     */
+    public static void isNull (ResultEnum resultEnum, Object ... objs) {
+        for (Object obj : objs) {
+            if (obj == null) {
+                throw new BusinessException(resultEnum);
+            }
         }
     }
 
@@ -34,7 +47,7 @@ public class ValidatedUtils {
      * @param obj
      * @param resultEnum
      */
-    public static void objectIsNotNuLL (Object obj, ResultEnum resultEnum) {
+    public static void isNotNull (Object obj, ResultEnum resultEnum) {
         if (obj != null) {
             throw new BusinessException(resultEnum);
         }
@@ -125,7 +138,7 @@ public class ValidatedUtils {
      * @param resultEnum
      */
     public static void isTrue (Boolean flag, ResultEnum resultEnum) {
-        if (flag == null || ! flag) {
+        if (flag == null || flag == true) {
             throw new BusinessException(resultEnum);
         }
     }
@@ -136,7 +149,39 @@ public class ValidatedUtils {
      * @param resultEnum
      */
     public static void isFalse (Boolean flag, ResultEnum resultEnum) {
-        if (flag == null || flag) {
+        if (flag == null || flag == false) {
+            throw new BusinessException(resultEnum);
+        }
+    }
+
+    /**
+     * 指定的对象是否包含在对象列表中
+     * @param resultEnum
+     * @param obj
+     * @param objs
+     */
+    public static void isContains (ResultEnum resultEnum, Object obj, Object ... objs) {
+        boolean contains = false;
+        for (Object o : objs) {
+            if (o.equals(obj)) {
+                contains = true;
+            }
+        }
+
+        if(! contains) {
+            throw new BusinessException(resultEnum);
+        }
+    }
+
+    /**
+     * int值是否在指定区间
+     * @param number int值
+     * @param max 最大值
+     * @param min 最小值
+     * @param resultEnum
+     */
+    public static void intIsScope (Integer number, Integer max, Integer min, ResultEnum resultEnum) {
+        if (number >= max || number <= min) {
             throw new BusinessException(resultEnum);
         }
     }

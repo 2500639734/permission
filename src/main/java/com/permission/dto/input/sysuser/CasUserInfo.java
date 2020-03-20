@@ -1,6 +1,7 @@
 package com.permission.dto.input.sysuser;
 
 import com.permission.dto.SysMenuTree;
+import com.permission.pojo.SysRole;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -21,6 +22,11 @@ public class CasUserInfo {
      * 用户信息
      */
     private SysUserInfo sysUserInfo;
+
+    /**
+     * 用户所包含的角色列表
+     */
+    private List<SysRole> sysRoleList;
 
     /**
      * 用户所包含的菜单树形列表

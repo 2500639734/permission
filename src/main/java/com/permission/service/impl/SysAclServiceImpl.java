@@ -4,19 +4,19 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.permission.constant.SysConstant;
 import com.permission.dto.input.sysacl.SysAclInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.SysAclDto;
+import com.permission.enumeration.WhetherEnum;
 import com.permission.enumeration.RegexEnum;
 import com.permission.enumeration.ResultEnum;
-import com.permission.enumeration.SysAclTypeEnum;
+import com.permission.enumeration.RequestTypeEnum;
 import com.permission.exception.BusinessException;
 import com.permission.pojo.SysAcl;
 import com.permission.mapper.SysAclMapper;
 import com.permission.service.SysAclService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.permission.util.ValidatedUtils;
+import com.permission.util.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,20 +49,28 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
     public IPage<SysAclDto> selectAclList(SysAclInput sysAclInput) {
         // 分页获取权限列表
         Page page = new Page(sysAclInput.getPageStart(), sysAclInput.getPageSize());
-        IPage<SysAcl> sysAclIPage = sysAclMapper.selectAclList(page, sysAclInput);
-        List<SysAcl> sysAclList = sysAclIPage.getRecords();
-        List<SysAclDto> sysAclOutputList = new ArrayList<>();
+        IPage<SysAclDto> sysAclIPage = sysAclMapper.selectAclList(page, sysAclInput);
 
-        // 类型转换
-        if (CollectionUtil.isNotEmpty(sysAclList)) {
-            sysAclList.forEach(sysAcl -> sysAclOutputList.add(SysAclDto.toSysAclOutPut(sysAcl)));
+        // 获取角色已拥有的权限列表,若角色已包含权限则默认选中
+        List<Integer> sysRoleAclIdList = new ArrayList<>();
+        if (sysAclInput.getRoleId() != null) {
+            List<SysAcl> sysAclList = selectAclsByRoleId(sysAclInput.getRoleId());
+            sysRoleAclIdList = sysAclList.stream().map(SysAcl::getId).collect(Collectors.toList());
         }
 
-        // 返回
-        IPage<SysAclDto> sysAclOutputIPage = new Page<>();
-        sysAclOutputIPage.setRecords(sysAclOutputList);
-        sysAclOutputIPage.setTotal(sysAclIPage.getTotal());
-        return sysAclOutputIPage;
+        for (SysAclDto sysAclDto : sysAclIPage.getRecords()) {
+            // 设置是否选中
+            if (sysRoleAclIdList.contains(sysAclDto.getId())) {
+                sysAclDto.setChecked(WhetherEnum.YES.getCode());
+            } else {
+                sysAclDto.setChecked(WhetherEnum.NO.getCode());
+            }
+
+            // 设置请求方式名称
+            sysAclDto.setMethodTypeName(RequestTypeEnum.getNameByCode(sysAclDto.getType()));
+        }
+
+        return sysAclIPage;
     }
 
     /**
@@ -102,22 +110,21 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
 
         // 权限是否存在
         SysAcl updateSysAcl = sysAclMapper.selectById(sysAclInput.getId());
-        ValidatedUtils.objectIsNuLL(updateSysAcl, ResultEnum.ACL_NOT_EXISTS);
+        ObjectUtils.isNull(updateSysAcl, ResultEnum.ACL_NOT_EXISTS);
 
         // 修改了名称则验证名称是否已存在
         if (! sysAclInput.getName().equals(updateSysAcl.getName())) {
             SysAcl sysAclByName = selectAclByName(sysAclInput.getName());
-            ValidatedUtils.objectIsNotNuLL(sysAclByName, ResultEnum.ACL_NAME_EXISTS);
+            ObjectUtils.isNotNull(sysAclByName, ResultEnum.ACL_NAME_EXISTS);
         }
 
         // 修改了编码则验证编码是否已存在
         if (! sysAclInput.getCode().equals(updateSysAcl.getCode())) {
             SysAcl sysAclByCode = selectAclByCode(sysAclInput.getCode());
-            ValidatedUtils.objectIsNotNuLL(sysAclByCode, ResultEnum.ACL_CODE_EXISTS);
+            ObjectUtils.isNotNull(sysAclByCode, ResultEnum.ACL_CODE_EXISTS);
         }
 
         updateSysAcl.setId(sysAclInput.getId())
-                .setPId(sysAclInput.getPId())
                 .setName(sysAclInput.getName())
                 .setCode(sysAclInput.getCode())
                 .setUrl(sysAclInput.getUrl())
@@ -138,11 +145,11 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
     @Override
     public int deleteSysAcl(Integer id) {
         // 参数校验
-        ValidatedUtils.objectIsNuLL(id, ResultEnum.PARAM_ERROR);
+        ObjectUtils.isNull(id, ResultEnum.PARAM_ERROR);
 
         // 权限是否存在
         SysAcl sysAcl = sysAclMapper.selectById(id);
-        ValidatedUtils.objectIsNuLL(sysAcl, ResultEnum.ACL_NOT_EXISTS);
+        ObjectUtils.isNull(sysAcl, ResultEnum.ACL_NOT_EXISTS);
 
         // 删除权限
         int deleteNums = sysAclMapper.deleteById(id);
@@ -159,21 +166,15 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
      * @param isUpdate 是否是更新
      */
     private void validSysAclInput (SysAclInput sysAclInput, boolean isUpdate) {
-        ValidatedUtils.objectIsNuLL(sysAclInput, ResultEnum.PARAM_ERROR);
+        ObjectUtils.isNull(sysAclInput, ResultEnum.PARAM_ERROR);
         if (isUpdate) {
-            ValidatedUtils.objectIsNuLL(sysAclInput.getId(), ResultEnum.PARAM_ERROR);
+            ObjectUtils.isNull(sysAclInput.getId(), ResultEnum.PARAM_ERROR);
         }
-        ValidatedUtils.objectIsNuLL(sysAclInput.getPId(), ResultEnum.PARAM_ERROR);
-        // 有父级权限则校验父级权限是否存在
-        if (! SysConstant.ROOT_ID.equals(sysAclInput.getPId())) {
-            SysAcl parentSysAcl = selectParentAclByPid(sysAclInput.getPId());
-            ValidatedUtils.objectIsNuLL(parentSysAcl, ResultEnum.PARENT_ACL_NOT_EXISTS);
-        }
-        ValidatedUtils.objectIsNuLL(sysAclInput.getName(), ResultEnum.ACL_NAME_IS_NULL);
-        ValidatedUtils.strIsMatchRegex(sysAclInput.getName(), RegexEnum.ACL_NAME.getRegex(), ResultEnum.ACL_NAME_NOT_REGEX);
-        ValidatedUtils.objectIsNuLL(sysAclInput.getCode(), ResultEnum.ACL_CODE_IS_NULL);
-        ValidatedUtils.strIsMatchRegex(sysAclInput.getCode(), RegexEnum.ACL_CODE.getRegex(), ResultEnum.ACL_CODE_NOT_REGEX);
-        ValidatedUtils.objectIsNuLL(sysAclInput.getType(), ResultEnum.ACL_TYPE_IS_NULL);
+        ObjectUtils.isNull(sysAclInput.getName(), ResultEnum.ACL_NAME_IS_NULL);
+        ObjectUtils.strIsMatchRegex(sysAclInput.getName(), RegexEnum.ACL_NAME.getRegex(), ResultEnum.ACL_NAME_NOT_REGEX);
+        ObjectUtils.isNull(sysAclInput.getCode(), ResultEnum.ACL_CODE_IS_NULL);
+        ObjectUtils.strIsMatchRegex(sysAclInput.getCode(), RegexEnum.ACL_CODE.getRegex(), ResultEnum.ACL_CODE_NOT_REGEX);
+        ObjectUtils.isNull(sysAclInput.getType(), ResultEnum.ACL_TYPE_IS_NULL);
     }
 
     /**
@@ -184,7 +185,7 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
     @Override
     public List<SysAcl> selectAclListByUserId(Integer userId) {
         // 参数校验
-        ValidatedUtils.objectIsNuLL(userId, ResultEnum.PARAM_ERROR);
+        ObjectUtils.isNull(userId, ResultEnum.PARAM_ERROR);
 
         return sysAclMapper.selectPermissionListByUserId(userId);
     }
@@ -218,8 +219,8 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
             }
 
             // 请求方式不匹配
-            if (! SysAclTypeEnum.ALL.getCode().equals(type)
-                && ! SysAclTypeEnum.getNameByCode(type).equals(request.getMethod())) {
+            if (! RequestTypeEnum.ALL.getCode().equals(type)
+                && ! RequestTypeEnum.getNameByCode(type).equals(request.getMethod())) {
                 return false;
             }
 
@@ -228,20 +229,6 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
         }
 
         return false;
-    }
-
-    /**
-     * 根据父级权限id查询父级权限
-     * @param pId 父级权限id
-     * @return
-     */
-    @Override
-    public SysAcl selectParentAclByPid(Integer pId) {
-        if (pId == null || SysConstant.ROOT_ID.equals(pId)) {
-            return null;
-        }
-
-        return sysAclMapper.selectOne(new QueryWrapper<SysAcl>().eq("id", pId));
     }
 
     /**
@@ -284,6 +271,20 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
         }
 
         return sysAclMapper.selectBatchIds(ids);
+    }
+
+    /**
+     * 获取角色拥有的权限列表
+     * @param roleId 角色id
+     * @return
+     */
+    @Override
+    public List<SysAcl> selectAclsByRoleId(Integer roleId) {
+        if (roleId == null) {
+            return null;
+        }
+
+        return sysAclMapper.selectAclsByRoleId(roleId);
     }
 
 }

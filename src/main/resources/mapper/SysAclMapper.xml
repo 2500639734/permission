@@ -35,14 +35,30 @@
     </select>
 
     <!-- 分页查询权限列表 -->
-    <select id="selectAclList" resultType="com.permission.pojo.SysAcl">
+    <select id="selectAclList" resultType="com.permission.dto.SysAclDto">
         select
             <include refid="Base_Column_List"/>
         from sys_acl as sa
         where 1 = 1
-        <if test="sysAclInput.name != null and sysAclInput.name != ''">
-            and sa.name like concat(#{sysAclInput.name}, '%')
+        <if test="sysAclInput.search != null and sysAclInput.search != ''">
+            and (
+                sa.name like concat(#{sysAclInput.search}, '%')
+                or sa.code like concat(#{sysAclInput.search}, '%')
+            )
         </if>
+        <if test="sysAclInput.createDateStart != null and sysAclInput.createDateStart != ''
+                and sysAclInput.createDateEnd != null and sysAclInput.createDateEnd != ''" >
+            and date_format(sa.create_time, '%Y-%m-%d') between #{sysAclInput.createDateStart} and #{sysAclInput.createDateEnd}
+        </if>
+    </select>
+
+    <!-- 获取角色拥有的权限列表 -->
+    <select id="selectAclsByRoleId" resultType="com.permission.pojo.SysAcl">
+        select
+            distinct sa.*
+        from sys_acl as sa
+        left join sys_role_acl as sra on sra.acl_id = sa.id
+        where sra.role_id = #{roleId}
     </select>
 
 </mapper>

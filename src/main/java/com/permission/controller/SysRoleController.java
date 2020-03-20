@@ -3,10 +3,15 @@ package com.permission.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.permission.annotation.CasUser;
+import com.permission.annotation.Permission;
+import com.permission.annotation.RestFulPermission;
 import com.permission.common.Result;
+import com.permission.dto.SysRoleDto;
+import com.permission.dto.input.sysrole.RoleAuthorizationInput;
 import com.permission.dto.input.sysrole.SysRoleInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.pojo.SysRole;
+import com.permission.service.SysRoleMenuService;
 import com.permission.service.SysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,19 +26,19 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/sys-role")
-// @Permission
+@Permission
 public class SysRoleController {
 
     @Autowired
     private SysRoleService sysRoleService;
 
     /**
-     * 查询角色列表
+     * 分页查询角色列表
      * @return
      */
-    @PostMapping("/selectRoleList")
-    public Result selectRoleList (@RequestBody SysRoleInput sysRoleInput) {
-        IPage<SysRole> sysRoleIPage = sysRoleService.selectRoleList(sysRoleInput);
+    @PostMapping("/selectSysRoleList")
+    public Result selectSysRoleList (@RequestBody SysRoleInput sysRoleInput) {
+        IPage<SysRoleDto> sysRoleIPage = sysRoleService.selectSysRoleList(sysRoleInput);
         return Result.success(sysRoleIPage.getRecords(), sysRoleIPage.getTotal());
     }
 
@@ -64,20 +69,43 @@ public class SysRoleController {
      * @param roleId 角色id
      * @return
      */
+    @RestFulPermission(aclCode = "role:deleteRole")
     @PostMapping("/deleteRole/{roleId}")
-    public Result updateRole (@PathVariable("roleId") Integer roleId) {
+    public Result deleteRole (@PathVariable("roleId") Integer roleId) {
         return Result.success(sysRoleService.deleteRole(roleId));
     }
 
     /**
-     * 角色授权
+     * 角色授权 / 取消授权菜单
      * @param sysUserInfo 当前登录用户信息
-     * @param sysRoleInput 角色授权入参
+     * @param roleAuthorizationInput 角色授权 / 取消授权入参
      * @return
      */
-    @PostMapping("/roleAuthorization")
-    public Result roleAuthorization (@CasUser SysUserInfo sysUserInfo, @RequestBody SysRoleInput sysRoleInput) {
-        return Result.success(sysRoleService.roleAuthorization(sysUserInfo, sysRoleInput));
+    @PostMapping("/authorizationMenu")
+    public Result authorizationMenu (@CasUser SysUserInfo sysUserInfo, @RequestBody RoleAuthorizationInput roleAuthorizationInput) {
+        return Result.success(sysRoleService.authorizationMenu(sysUserInfo, roleAuthorizationInput));
+    }
+
+    /**
+     * 角色授权权限
+     * @param sysUserInfo 当前登录的用户信息
+     * @param roleAuthorizationInput 角色授权权限入参
+     * @return
+     */
+    @PostMapping("/authorizationAcl")
+    public Result authorizationAcl(@CasUser SysUserInfo sysUserInfo, @RequestBody RoleAuthorizationInput roleAuthorizationInput) {
+        return Result.success(sysRoleService.authorizationAcl(sysUserInfo, roleAuthorizationInput));
+    }
+
+    /**
+     * 取消角色授权的权限
+     * @param sysUserInfo 当前登录的用户信息
+     * @param roleAuthorizationInput 取消用户授权角色入参
+     * @return
+     */
+    @PostMapping("/cancelAuthorizationAcl")
+    public Result cancelAuthorizationAcl(@CasUser SysUserInfo sysUserInfo, @RequestBody RoleAuthorizationInput roleAuthorizationInput) {
+        return Result.success(sysRoleService.cancelAuthorizationAcl(sysUserInfo, roleAuthorizationInput));
     }
 
 }
