@@ -58,7 +58,7 @@ public class ObjectUtils {
      * @param strs
      * @param resultEnum
      */
-    public static void strisNull (String strs, ResultEnum resultEnum) {
+    public static void strIsNull (String strs, ResultEnum resultEnum) {
         if (StringUtils.isEmpty(strs)) {
             throw new BusinessException(resultEnum);
         }
@@ -150,6 +150,38 @@ public class ObjectUtils {
      */
     public static void isFalse (Boolean flag, ResultEnum resultEnum) {
         if (flag == null || flag == false) {
+            throw new BusinessException(resultEnum);
+        }
+    }
+
+    /**
+     * 指定的对象是否包含在对象列表中
+     * @param resultEnum
+     * @param obj
+     * @param objs
+     */
+    public static void isContains (ResultEnum resultEnum, Object obj, Object ... objs) {
+        boolean contains = false;
+        for (Object o : objs) {
+            if (o.equals(obj)) {
+                contains = true;
+            }
+        }
+
+        if(! contains) {
+            throw new BusinessException(resultEnum);
+        }
+    }
+
+    /**
+     * int值是否在指定区间
+     * @param number int值
+     * @param max 最大值
+     * @param min 最小值
+     * @param resultEnum
+     */
+    public static void intIsScope (Integer number, Integer max, Integer min, ResultEnum resultEnum) {
+        if (number >= max || number <= min) {
             throw new BusinessException(resultEnum);
         }
     }

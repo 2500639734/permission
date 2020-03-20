@@ -200,18 +200,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
 
         // 用户姓名
-        ObjectUtils.strisNull(sysUserInput.getName(), ResultEnum.NAME_IS_NULL);
-        ObjectUtils.strIsMatchRegex(sysUserInput.getName(), RegexEnum.NAME.getRegex(), ResultEnum.NAME__NOT_REGEX);
+        ObjectUtils.strIsNull(sysUserInput.getName(), ResultEnum.NAME_IS_NULL);
+        ObjectUtils.strIsMatchRegex(sysUserInput.getName(), RegexEnum.NAME.getRegex(), ResultEnum.NAME_NOT_REGEX);
 
         // 用户名
         if (! isUpdate) {
-            ObjectUtils.strisNull(sysUserInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
+            ObjectUtils.strIsNull(sysUserInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
             ObjectUtils.strIsMatchRegex(sysUserInput.getUsername(), RegexEnum.USERNAME.getRegex(), ResultEnum.USERNAME_NOT_REGEX);
         }
 
         // 用户密码
         if (! isUpdate) {
-            ObjectUtils.strisNull(sysUserInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
+            ObjectUtils.strIsNull(sysUserInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
             ObjectUtils.strIsMatchRegex(sysUserInput.getPassword(), RegexEnum.PASSWORD.getRegex(), ResultEnum.PASSWORD_NOT_REGEX);
         }
 
@@ -226,7 +226,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public String login(HttpServletResponse response, SysUserLoginInput sysUserLoginInput) {
         // 参数校验
         ObjectUtils.isNull(sysUserLoginInput, ResultEnum.PARAM_ERROR);
-        ObjectUtils.strisNull(sysUserLoginInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
+        ObjectUtils.strIsNull(sysUserLoginInput.getUsername(), ResultEnum.USERNAME_IS_NULL);
         ObjectUtils.isNull(sysUserLoginInput.getPassword(), ResultEnum.PASSWORD_IS_NULL);
 
         // 根据用户名查询用户

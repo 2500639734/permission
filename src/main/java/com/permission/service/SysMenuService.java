@@ -3,6 +3,7 @@ package com.permission.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.permission.dto.SysMenuTree;
 import com.permission.dto.input.sysmenu.SysMenuInput;
+import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.pojo.SysMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -31,6 +32,13 @@ public interface SysMenuService extends IService<SysMenu> {
      * @return
      */
     List<SysMenu> selectSysMenuList ();
+
+    /**
+     * 根据id查询菜单
+     * @param id
+     * @return
+     */
+    SysMenu selectById (Integer id);
 
     /**
      * 菜单ids查询菜单列表
@@ -66,5 +74,13 @@ public interface SysMenuService extends IService<SysMenu> {
      * @return
      */
     List<SysMenuTree> selectMenuTreeByRoleId(Integer roleId);
+
+    /**
+     * 添加菜单
+     * @param sysUserInfo 当前登录用户信息
+     * @param sysMenuInput 添加菜单入参
+     * @return
+     */
+    boolean addSysMenu (SysUserInfo sysUserInfo, SysMenuInput sysMenuInput);
 
 }

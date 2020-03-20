@@ -1,11 +1,6 @@
 package com.permission.interceptor;
 
-import com.permission.dto.input.sysuser.CasUserInfo;
-import com.permission.enumeration.ResultEnum;
-import com.permission.exception.BusinessException;
 import com.permission.util.CookieUtils;
-import com.permission.util.RedisUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;

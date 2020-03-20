@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.permission.dto.input.sysacl.SysAclInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.dto.SysAclDto;
-import com.permission.enumeration.CheckedEnum;
+import com.permission.enumeration.WhetherEnum;
 import com.permission.enumeration.RegexEnum;
 import com.permission.enumeration.ResultEnum;
 import com.permission.enumeration.RequestTypeEnum;
@@ -61,9 +61,9 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
         for (SysAclDto sysAclDto : sysAclIPage.getRecords()) {
             // 设置是否选中
             if (sysRoleAclIdList.contains(sysAclDto.getId())) {
-                sysAclDto.setChecked(CheckedEnum.CHECKED.getCode());
+                sysAclDto.setChecked(WhetherEnum.YES.getCode());
             } else {
-                sysAclDto.setChecked(CheckedEnum.NO_CHECKED.getCode());
+                sysAclDto.setChecked(WhetherEnum.NO.getCode());
             }
 
             // 设置请求方式名称

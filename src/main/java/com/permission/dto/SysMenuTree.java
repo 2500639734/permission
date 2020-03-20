@@ -37,11 +37,6 @@ public class SysMenuTree extends SysMenu implements Serializable {
     private Integer checked;
 
     /**
-     * elementui -> 是否拥有子节点：true-是，false-否
-     */
-    private Boolean hasChildren;
-
-    /**
      * 子菜单列表
      */
     private List<SysMenuTree> childMenuTreeList = new ArrayList<>();
@@ -93,7 +88,7 @@ public class SysMenuTree extends SysMenu implements Serializable {
      * @return
      */
     public static List<SysMenuTree> getRootMenuTreeList (List<SysMenuTree> sysMenuTreeList) {
-        return sysMenuTreeList.stream().filter(sysMenuTree -> SysConstant.ROOT_ID.equals(sysMenuTree.getPId())).collect(Collectors.toList());
+        return sysMenuTreeList.stream().filter(sysMenuTree -> SysConstant.ROOT_ID.equals(sysMenuTree.getPid())).collect(Collectors.toList());
     }
 
     /**
@@ -106,7 +101,7 @@ public class SysMenuTree extends SysMenu implements Serializable {
         parentSysMenuTreeList.forEach(parentSysMenuTree -> {
             List<SysMenuTree> childSysMenuTreeList = new ArrayList<>();
             sysMenuTreeList.forEach(sysMenuTree -> {
-                if (sysMenuTree.getPId().equals(parentSysMenuTree.getId())) {
+                if (sysMenuTree.getPid().equals(parentSysMenuTree.getId())) {
                     childSysMenuTreeList.add(sysMenuTree);
                 }
             });
@@ -119,15 +114,25 @@ public class SysMenuTree extends SysMenu implements Serializable {
 
     /**
      * Map构建菜单树
-     * @param sysMenuTreeList 所有的菜单集合
+     * @param sysMenuTreeList 所有的菜单集合,至少包含一个根菜单
      * @return
      */
     public static List<SysMenuTree> buildSysMenuTree(List<SysMenuTree> sysMenuTreeList) {
+        // 所有菜单Map
         Map<Integer, SysMenuTree> sysMenuTreeMap = sysMenuTreeList.stream().collect(Collectors.toMap(SysMenuTree::getId, Function.identity(), (k1, k2) -> k2));
+
+        // 子菜单的父级菜单childMenuTreeList集合中添加该子菜单
         sysMenuTreeList.stream()
-                .filter(sysMenuTree -> ! SysConstant.ROOT_ID.equals(sysMenuTree.getPId()))
-                .forEach(sysMenuTree -> sysMenuTreeMap.get(sysMenuTree.getPId()).getChildMenuTreeList().add(sysMenuTree));
-        return sysMenuTreeList.stream().filter(sysMenuTree -> SysConstant.ROOT_ID.equals(sysMenuTree.getPId())).collect(Collectors.toList());
+                .filter(sysMenuTree -> ! SysConstant.ROOT_ID.equals(sysMenuTree.getPid()))
+                .forEach(childSysMenuTree -> {
+                    SysMenuTree sysMenuTree = sysMenuTreeMap.get(childSysMenuTree.getPid());
+                    if (sysMenuTree != null) {
+                        sysMenuTree.getChildMenuTreeList().add(childSysMenuTree);
+                    }
+                });
+
+        // 过滤根节点返回
+        return sysMenuTreeList.stream().filter(sysMenuTree -> SysConstant.ROOT_ID.equals(sysMenuTree.getPid())).collect(Collectors.toList());
     }
 
 }

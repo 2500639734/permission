@@ -94,6 +94,7 @@ public class SysUserController {
      * @param request
      * @return
      */
+    @NoPermission
     @PostMapping("/logout")
     public Result logout (HttpServletRequest request) {
         sysUserService.logout(request);

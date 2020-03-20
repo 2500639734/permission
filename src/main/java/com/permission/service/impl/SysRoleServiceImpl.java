@@ -9,7 +9,7 @@ import com.permission.dto.SysRoleDto;
 import com.permission.dto.input.sysrole.RoleAuthorizationInput;
 import com.permission.dto.input.sysrole.SysRoleInput;
 import com.permission.dto.input.sysuser.SysUserInfo;
-import com.permission.enumeration.CheckedEnum;
+import com.permission.enumeration.WhetherEnum;
 import com.permission.enumeration.RegexEnum;
 import com.permission.enumeration.ResultEnum;
 import com.permission.exception.BusinessException;
@@ -66,17 +66,14 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
         // 获取用户已拥有的角色列表,若用户已包含角色则默认选中
         if (sysRoleInput != null && sysRoleInput.getUserId() != null) {
-            List<SysRole> sysUserRoleList = selectSysRoleListByUserId(sysRoleInput.getUserId());
-            List<Integer> sysUserRoleIdList = sysUserRoleList.stream().map(SysRole::getId).collect(Collectors.toList());
-            if (CollUtil.isNotEmpty(sysUserRoleIdList)) {
-                sysRoleIPage.getRecords().forEach(sysRoleDto -> {
-                    if (sysUserRoleIdList.contains(sysRoleDto.getId())) {
-                        sysRoleDto.setChecked(CheckedEnum.CHECKED.getCode());
-                    } else {
-                        sysRoleDto.setChecked(CheckedEnum.NO_CHECKED.getCode());
-                    }
-                });
-            }
+            List<Integer> sysUserRoleIdList = selectSysRoleListByUserId(sysRoleInput.getUserId()).stream().map(SysRole::getId).collect(Collectors.toList());
+            sysRoleIPage.getRecords().forEach(sysRoleDto -> {
+                if (sysUserRoleIdList.contains(sysRoleDto.getId())) {
+                    sysRoleDto.setChecked(WhetherEnum.YES.getCode());
+                } else {
+                    sysRoleDto.setChecked(WhetherEnum.NO.getCode());
+                }
+            });
         }
 
         return sysRoleIPage;

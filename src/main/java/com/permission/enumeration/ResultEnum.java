@@ -31,7 +31,7 @@ public enum ResultEnum {
      * 用户相关枚举
      */
     NAME_IS_NULL (10001, "请填写姓名"),
-    NAME__NOT_REGEX (10001, "请检查姓名是否正确"),
+    NAME_NOT_REGEX (10001, "请检查姓名是否正确"),
     USERNAME_IS_NULL (10001, "请填写用户名"),
     USERNAME_NOT_REGEX (1002, "请检查用户名是否正确"),
     PASSWORD_IS_NULL (10003, "请填写密码"),
@@ -63,7 +63,13 @@ public enum ResultEnum {
     /**
      * 菜单相关枚举
      */
-    NO_SELECTD_MENU (11001, "请选择对应菜单"),
+    NO_SELECTD_MENU (12001, "请选择对应菜单"),
+    MENU_NAME_NOT_REGEX (12002, "请检查菜单名称是否正确"),
+    MENU_PATH_NOT_REGEX (12003, "请检查菜单路由地址是否正确"),
+    MENU_ICON_NOT_REGEX (12004, "请检查菜单图标是否正确"),
+    MENU_TYPE_ERROR (12005, "请检查菜单类型是否正确"),
+    MENU_SORT_ERROR (12006, "请检查菜单顺序是否正确"),
+    MENU_SORT_EXISTS (12007, "菜单顺序已存在"),
 
     /**
      * 权限相关枚举

@@ -2,12 +2,14 @@ package com.permission.controller;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.permission.annotation.CasUser;
 import com.permission.annotation.Permission;
 import com.permission.annotation.RestFulPermission;
 import com.permission.common.Result;
 import com.permission.dto.SysMenuDto;
 import com.permission.dto.SysMenuTree;
 import com.permission.dto.input.sysmenu.SysMenuInput;
+import com.permission.dto.input.sysuser.SysUserInfo;
 import com.permission.enumeration.ResultEnum;
 import com.permission.pojo.SysMenu;
 import com.permission.service.SysMenuService;
@@ -50,6 +52,17 @@ public class SysMenuController {
     @PostMapping("/selectMenuTreeByRoleId/{roleId}")
     public Result selectMenuTreeByRoleId (@PathVariable("roleId") Integer roleId) {
         return Result.build(ResultEnum.SUCCESS, sysMenuService.selectMenuTreeByRoleId(roleId));
+    }
+
+    /**
+     * 添加菜单
+     * @param sysUserInfo 当前登录用户信息
+     * @param sysMenuInput 添加菜单入参
+     * @return
+     */
+    @PostMapping("/addMenu")
+    public Result addMenu (@CasUser SysUserInfo sysUserInfo, @RequestBody SysMenuInput sysMenuInput) {
+        return Result.build(ResultEnum.SUCCESS, sysMenuService.addSysMenu(sysUserInfo, sysMenuInput));
     }
 
 }

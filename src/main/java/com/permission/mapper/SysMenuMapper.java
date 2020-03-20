@@ -2,6 +2,7 @@ package com.permission.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.permission.dto.SysMenuTree;
 import com.permission.dto.input.sysmenu.SysMenuInput;
 import com.permission.pojo.SysMenu;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -25,7 +26,7 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
      * @param sysMenuInput 菜单查询入参
      * @return
      */
-    IPage<SysMenu> selectSysMenuList(@Param("page") Page<SysMenu> page, @Param("sysMenuInput") SysMenuInput sysMenuInput);
+    IPage<SysMenuTree> selectSysMenuList(@Param("page") Page<SysMenuTree> page, @Param("sysMenuInput") SysMenuInput sysMenuInput);
 
     /**
      * 获取用户包含的菜单列表
