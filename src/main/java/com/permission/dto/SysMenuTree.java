@@ -1,6 +1,8 @@
 package com.permission.dto;
 
+import cn.hutool.core.collection.CollUtil;
 import com.permission.constant.SysConstant;
+import com.permission.enumeration.WhetherEnum;
 import com.permission.pojo.SysMenu;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -133,6 +135,29 @@ public class SysMenuTree extends SysMenu implements Serializable {
 
         // 过滤根节点返回
         return sysMenuTreeList.stream().filter(sysMenuTree -> SysConstant.ROOT_ID.equals(sysMenuTree.getPid())).collect(Collectors.toList());
+    }
+
+    /**
+     * 获取指定菜单下的所有子菜单id
+     * @param menuId 指定菜单id
+     * @param sysMenuList 所有菜单 || 指定菜单的一级子菜单集合
+     * @return
+     */
+    public static List<Integer> getChildMenuIdList(Integer menuId, List<SysMenu> sysMenuList) {
+        List<Integer> childIdList = new ArrayList<>();
+        sysMenuList.forEach(sysMenu -> {
+            if (menuId.equals(sysMenu.getPid())) {
+                childIdList.add(sysMenu.getId());
+                if (WhetherEnum.YES.getCode().equals(sysMenu.getHasChild())) {
+                    List<Integer> thatChildIdList = getChildMenuIdList(sysMenu.getId(),
+                            sysMenuList.stream().filter(menu -> sysMenu.getId().equals(menu.getPid())).collect(Collectors.toList()));
+                    if (CollUtil.isNotEmpty(thatChildIdList)) {
+                        childIdList.addAll(thatChildIdList);
+                    }
+                }
+            }
+        });
+        return childIdList;
     }
 
 }

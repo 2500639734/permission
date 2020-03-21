@@ -174,6 +174,18 @@ public class ObjectUtils {
     }
 
     /**
+     * 指定对象是否包含在集合中
+     * @param obj
+     * @param collection
+     * @param resultEnum
+     */
+    public static void isContains (Object obj, Collection collection, ResultEnum resultEnum) {
+        if(collection.contains(obj)) {
+            throw new BusinessException(resultEnum);
+        }
+    }
+
+    /**
      * int值是否在指定区间
      * @param number int值
      * @param max 最大值

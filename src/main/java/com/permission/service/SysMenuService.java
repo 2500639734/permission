@@ -35,10 +35,17 @@ public interface SysMenuService extends IService<SysMenu> {
 
     /**
      * 根据id查询菜单
-     * @param id
+     * @param id 菜单id
      * @return
      */
     SysMenu selectById (Integer id);
+
+    /**
+     * 根据pid查询菜单
+     * @param pid 父菜单id
+     * @return
+     */
+    List<SysMenu> selectByPid (Integer pid);
 
     /**
      * 菜单ids查询菜单列表
@@ -81,6 +88,20 @@ public interface SysMenuService extends IService<SysMenu> {
      * @param sysMenuInput 添加菜单入参
      * @return
      */
-    boolean addSysMenu (SysUserInfo sysUserInfo, SysMenuInput sysMenuInput);
+    void addSysMenu (SysUserInfo sysUserInfo, SysMenuInput sysMenuInput);
+
+    /**
+     * 修改菜单
+     * @param sysUserInfo 当前登录用户信息
+     * @param sysMenuInput 添加菜单入参
+     * @return
+     */
+    void updateSysMenu (SysUserInfo sysUserInfo, SysMenuInput sysMenuInput);
+
+    /**
+     * 删除菜单
+     * @param id 菜单id
+     */
+    void deleteSysMenu (Integer id);
 
 }

@@ -23,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -92,6 +89,19 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             return null;
         }
         return sysMenuMapper.selectById(id);
+    }
+
+    /**
+     * 根据pid查询菜单
+     * @param pid 父菜单id
+     * @return
+     */
+    @Override
+    public List<SysMenu> selectByPid(Integer pid) {
+        if (pid == null) {
+            return null;
+        }
+        return sysMenuMapper.selectList(new QueryWrapper<SysMenu>().eq("pid", pid));
     }
 
     /**
@@ -192,19 +202,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public boolean addSysMenu(SysUserInfo sysUserInfo, SysMenuInput sysMenuInput) {
+    public void addSysMenu(SysUserInfo sysUserInfo, SysMenuInput sysMenuInput) {
         // 参数校验
-        ObjectUtils.isNull(sysMenuInput, ResultEnum.PARAM_ERROR);
-        ObjectUtils.strIsMatchRegex(sysMenuInput.getName(), RegexEnum.NAME.getRegex(), ResultEnum.MENU_NAME_NOT_REGEX);
-        ObjectUtils.strIsMatchRegex(sysMenuInput.getPath(), RegexEnum.MENU_PATH.getRegex(), ResultEnum.MENU_PATH_NOT_REGEX);
-        ObjectUtils.strIsMatchRegex(sysMenuInput.getIcon(), RegexEnum.MENU_ICON.getRegex(), ResultEnum.MENU_ICON_NOT_REGEX);
-        ObjectUtils.isContains(ResultEnum.MENU_TYPE_ERROR, sysMenuInput.getType(), WhetherEnum.YES.getCode(), WhetherEnum.NO.getCode());
+        validMenu (sysMenuInput);
 
         // 菜单顺序是否已存在
         Set<Integer> sortSet = selectSysMenuList().stream().map(SysMenu::getSort).collect(Collectors.toSet());
-        if (sortSet.contains(sysMenuInput.getSort())) {
-            throw new BusinessException(ResultEnum.MENU_SORT_EXISTS);
-        }
+        ObjectUtils.isContains(sysMenuInput.getSort(), sortSet, ResultEnum.MENU_SORT_EXISTS);
 
         SysMenu sysMenu = SysMenuInput.toSysMenu(sysMenuInput)
                 .setCreateTime(new Date())
@@ -220,13 +224,95 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         } else {
             // 添加父菜单,更新父菜单hasChild
             SysMenu parentSysMenu = selectById(sysMenuInput.getPid());
-            if (WhetherEnum.NO.equals(parentSysMenu.getHasChild())) {
+            if (WhetherEnum.NO.getCode().equals(parentSysMenu.getHasChild())) {
                 parentSysMenu.setHasChild(WhetherEnum.YES.getCode());
                 sysMenuMapper.updateById(parentSysMenu);
             }
         }
 
-        return sysMenuMapper.insert(sysMenu) > 0;
+        // 添加菜单
+        if (sysMenuMapper.insert(sysMenu) <= 0) {
+            throw new BusinessException(ResultEnum.MENU_ADD_ERROR);
+        }
+
+    }
+
+    /**
+     * 修改菜单
+     * @param sysUserInfo 当前登录用户信息
+     * @param sysMenuInput 添加菜单入参
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateSysMenu(SysUserInfo sysUserInfo, SysMenuInput sysMenuInput) {
+        // 参数校验
+        validMenu (sysMenuInput);
+
+        // 菜单是否存在
+        SysMenu oldSysMenu = selectById(sysMenuInput.getId());
+        ObjectUtils.isNull(oldSysMenu, ResultEnum.MENU_NOT_EXISTS);
+
+        // 修改了菜单顺序
+        if (! oldSysMenu.getSort().equals(sysMenuInput.getSort())) {
+            // 菜单顺序是否已存在
+            Set<Integer> sortSet = selectSysMenuList().stream().map(SysMenu::getSort).collect(Collectors.toSet());
+            ObjectUtils.isContains(sysMenuInput.getSort(), sortSet, ResultEnum.MENU_SORT_EXISTS);
+        }
+
+        SysMenu sysMenu = SysMenuInput.toSysMenu(sysMenuInput)
+                .setUpdateTime(new Date())
+                .setUpdateUserId(sysUserInfo.getId())
+                .setUpdateUserName(sysUserInfo.getName());
+
+        // 修改菜单
+        if (sysMenuMapper.updateById(sysMenu) <= 0) {
+            throw new BusinessException(ResultEnum.MENU_UPDATE_ERROR);
+        }
+    }
+
+    /**
+     * 删除菜单
+     * @param id 菜单id
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void deleteSysMenu(Integer id) {
+        // 参数校验
+        ObjectUtils.isNull(id, ResultEnum.MENU_NOT_EXISTS);
+        SysMenu sysMenu = selectById(id);
+        ObjectUtils.isNull(sysMenu, ResultEnum.MENU_NOT_EXISTS);
+
+        // 获取指定菜单及菜单下的所有子菜单id集合
+        List<Integer> childMenuIdList = SysMenuTree.getChildMenuIdList(id, selectSysMenuList());
+        childMenuIdList.add(id);
+
+        // 删除指定菜单及菜单下的所有子菜单
+        int deleteNums = sysMenuMapper.deleteBatchIds(childMenuIdList);
+        if (deleteNums <= 0) {
+            throw new BusinessException(ResultEnum.MENU_DELETE_ERROR);
+        }
+
+        // 若指定菜单的父级菜单不为根菜单,且未包含其它子菜单则将has_child置为否
+        if (! SysConstant.ROOT_ID.equals(sysMenu.getPid())) {
+            long childCount = selectByPid(sysMenu.getPid()).stream().filter(childSysMenu -> ! id.equals(childSysMenu.getId())).count();
+            if (childCount <= 0) {
+                sysMenuMapper.updateById(selectById(sysMenu.getPid()).setHasChild(WhetherEnum.NO.getCode()));
+            }
+        }
+
+    }
+
+    /**
+     * 校验菜单操作项
+     * @param sysMenuInput
+     */
+    private void validMenu (SysMenuInput sysMenuInput) {
+        ObjectUtils.isNull(sysMenuInput, ResultEnum.PARAM_ERROR);
+        ObjectUtils.strIsMatchRegex(sysMenuInput.getName(), RegexEnum.NAME.getRegex(), ResultEnum.MENU_NAME_NOT_REGEX);
+        ObjectUtils.strIsMatchRegex(sysMenuInput.getPath(), RegexEnum.MENU_PATH.getRegex(), ResultEnum.MENU_PATH_NOT_REGEX);
+        ObjectUtils.strIsMatchRegex(sysMenuInput.getIcon(), RegexEnum.MENU_ICON.getRegex(), ResultEnum.MENU_ICON_NOT_REGEX);
+        ObjectUtils.isContains(ResultEnum.MENU_TYPE_ERROR, sysMenuInput.getType(), WhetherEnum.YES.getCode(), WhetherEnum.NO.getCode());
     }
 
 }

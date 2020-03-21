@@ -70,6 +70,10 @@ public enum ResultEnum {
     MENU_TYPE_ERROR (12005, "请检查菜单类型是否正确"),
     MENU_SORT_ERROR (12006, "请检查菜单顺序是否正确"),
     MENU_SORT_EXISTS (12007, "菜单顺序已存在"),
+    MENU_NOT_EXISTS (12008, "菜单不存在"),
+    MENU_ADD_ERROR (12009, "添加菜单失败"),
+    MENU_UPDATE_ERROR (12010, "修改菜单失败"),
+    MENU_DELETE_ERROR (12011, "删除菜单失败"),
 
     /**
      * 权限相关枚举

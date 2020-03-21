@@ -62,7 +62,31 @@ public class SysMenuController {
      */
     @PostMapping("/addMenu")
     public Result addMenu (@CasUser SysUserInfo sysUserInfo, @RequestBody SysMenuInput sysMenuInput) {
-        return Result.build(ResultEnum.SUCCESS, sysMenuService.addSysMenu(sysUserInfo, sysMenuInput));
+        sysMenuService.addSysMenu(sysUserInfo, sysMenuInput);
+        return Result.build(ResultEnum.SUCCESS);
+    }
+
+    /**
+     * 修改菜单
+     * @param sysUserInfo 当前登录用户信息
+     * @param sysMenuInput 添加菜单入参
+     * @return
+     */
+    @PostMapping("/updateMenu")
+    public Result updateMenu (@CasUser SysUserInfo sysUserInfo, @RequestBody SysMenuInput sysMenuInput) {
+        sysMenuService.updateSysMenu(sysUserInfo, sysMenuInput);
+        return Result.build(ResultEnum.SUCCESS);
+    }
+
+    /**
+     * 删除菜单
+     * @param id 菜单id
+     */
+    @RestFulPermission(aclCode = "menu:deleteMenu")
+    @PostMapping("/deleteMenu/{id}")
+    public Result deleteMenu (@PathVariable Integer id) {
+        sysMenuService.deleteSysMenu(id);
+        return Result.build(ResultEnum.SUCCESS);
     }
 
 }
